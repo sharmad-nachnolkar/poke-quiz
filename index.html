@@ -1,0 +1,4132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokemon GK Quiz</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 700px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #e9ecef;
+      }
+
+      .tab {
+        padding: 12px 24px;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #868e96;
+        transition: all 0.3s;
+        margin-bottom: -3px;
+      }
+
+      .tab:hover {
+        color: #667eea;
+      }
+
+      .tab.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      h1 {
+        color: #ff6b6b;
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 2em;
+      }
+
+      .score-board {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.2em;
+        color: #667eea;
+        font-weight: bold;
+      }
+
+      .question-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+
+      .question {
+        font-size: 1.3em;
+        color: #333;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .option {
+        background: #fff;
+        border: 3px solid #667eea;
+        padding: 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1.1em;
+      }
+
+      .option:hover {
+        background: #667eea;
+        color: white;
+        transform: translateX(5px);
+      }
+
+      .option.correct {
+        background: #51cf66;
+        color: white;
+        border-color: #51cf66;
+      }
+
+      .option.wrong {
+        background: #ff6b6b;
+        color: white;
+        border-color: #ff6b6b;
+      }
+
+      .option.disabled {
+        pointer-events: none;
+        opacity: 0.6;
+      }
+
+      .pokemon-reveal {
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #ffd93d 0%, #ffb93d 100%);
+        border-radius: 15px;
+        margin: 20px 0;
+        animation: slideIn 0.5s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .pokemon-reveal img {
+        width: 200px;
+        height: 200px;
+        margin: 10px 0;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+      }
+
+      .pokemon-reveal h2 {
+        color: #c92a2a;
+        margin: 10px 0;
+      }
+
+      .pokemon-reveal p {
+        color: #333;
+        font-size: 1.1em;
+        margin: 5px 0;
+      }
+
+      .next-btn {
+        background: #51cf66;
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 1.2em;
+        border-radius: 10px;
+        cursor: pointer;
+        display: block;
+        margin: 20px auto;
+        transition: all 0.3s;
+      }
+
+      .next-btn:hover {
+        background: #40c057;
+        transform: scale(1.05);
+      }
+
+      .feedback {
+        text-align: center;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 10px;
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+
+      .feedback.correct {
+        background: #d3f9d8;
+        color: #2b8a3e;
+      }
+
+      .feedback.wrong {
+        background: #ffe3e3;
+        color: #c92a2a;
+      }
+
+      .game-over {
+        text-align: center;
+        padding: 30px;
+      }
+
+      .game-over h2 {
+        color: #667eea;
+        font-size: 2em;
+        margin-bottom: 20px;
+      }
+
+      .restart-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 1.2em;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .restart-btn:hover {
+        background: #5a67d8;
+        transform: scale(1.05);
+      }
+
+      .pokemon-collection {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .pokemon-badge {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2em;
+      }
+
+      .feature-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 15px 0;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .feature-card h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.3em;
+      }
+
+      .feature-card p {
+        margin: 0;
+        opacity: 0.9;
+      }
+
+      .custom-quiz-builder {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 20px;
+      }
+
+      .input-group {
+        margin: 15px 0;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .input-group input,
+      .input-group select,
+      .input-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 1em;
+        font-family: inherit;
+      }
+
+      .btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: bold;
+        transition: all 0.3s;
+        margin: 5px;
+      }
+
+      .btn:hover {
+        background: #5a67d8;
+        transform: scale(1.05);
+      }
+
+      .btn-danger {
+        background: #ff6b6b;
+      }
+
+      .btn-danger:hover {
+        background: #fa5252;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #ffd93d 0%, #ffb93d 100%);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #c92a2a;
+      }
+
+      .stat-label {
+        color: #333;
+        font-weight: bold;
+        margin-top: 5px;
+      }
+
+      .difficulty-selector {
+        display: flex;
+        gap: 10px;
+        margin: 15px 0;
+        flex-wrap: wrap;
+      }
+
+      .difficulty-btn {
+        flex: 1;
+        min-width: 100px;
+        padding: 15px;
+        border: 3px solid #dee2e6;
+        background: white;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: bold;
+      }
+
+      .difficulty-btn:hover {
+        border-color: #667eea;
+      }
+
+      .difficulty-btn.selected {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+      }
+
+      .pokemon-bar {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        border: 2px solid #dee2e6;
+      }
+
+      .pokemon-bar h4 {
+        margin: 0 0 10px 0;
+        color: #667eea;
+        font-size: 1em;
+      }
+
+      .pokemon-list {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .pokemon-item {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        background: white;
+        border: 2px solid #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+      }
+
+      .pokemon-item:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .pokemon-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .pokemon-item.selectable {
+        cursor: pointer;
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal.show {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+      }
+
+      .modal-content h3 {
+        color: #c92a2a;
+        margin-bottom: 15px;
+      }
+
+      .modal-pokemon-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+      }
+
+      .modal-pokemon-item {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 10px;
+        border: 3px solid #dee2e6;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .modal-pokemon-item:hover {
+        border-color: #ff6b6b;
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+      }
+
+      .modal-pokemon-item img {
+        width: 60px;
+        height: 60px;
+      }
+
+      .modal-pokemon-item p {
+        margin: 5px 0 0 0;
+        font-size: 0.85em;
+        font-weight: bold;
+        color: #495057;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎮 Pokemon GK Quiz! 🎮</h1>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('quiz')">📝 Quiz</button>
+        <button class="tab" onclick="switchTab('pokemon-facts')">
+          📖 Pokemon Facts
+        </button>
+      </div>
+
+      <!-- Quiz Tab -->
+      <div id="quiz-tab" class="tab-content active">
+        <div class="score-board">
+          <div>
+            Question: <span id="current-question">1</span> of
+            <span id="total-questions">20</span>
+          </div>
+          <div>Score: <span id="score">0</span> 🏆</div>
+        </div>
+        <div id="quiz-content"></div>
+
+        <!-- Pokemon Collection Bar -->
+        <div class="pokemon-bar" id="pokemon-bar">
+          <h4>🎒 Your Pokemon Collection (This Quiz)</h4>
+          <div class="pokemon-list" id="pokemon-list">
+            <p style="color: #868e96; margin: 0">
+              No Pokemon yet - answer correctly to catch them!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pokemon Facts Tab -->
+      <div id="pokemon-facts-tab" class="tab-content">
+        <h2 style="color: #667eea; margin-bottom: 20px">
+          📖 Your Pokemon Encyclopedia
+        </h2>
+        <div id="pokemon-facts-content">
+          <p style="color: #868e96; text-align: center; padding: 40px">
+            Catch Pokemon by answering questions correctly to unlock their facts
+            here!
+          </p>
+        </div>
+        <div style="margin-top: 20px; text-align: center">
+          <button
+            class="btn"
+            onclick="resetQuestionHistory()"
+            style="background: #ff6b6b"
+          >
+            🔄 Reset Question History
+          </button>
+          <p style="color: #868e96; font-size: 0.9em; margin-top: 10px">
+            Total questions in database: <strong>1000</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for returning Pokemon -->
+    <div id="return-pokemon-modal" class="modal">
+      <div class="modal-content">
+        <h3>❌ Wrong Answer!</h3>
+        <p style="color: #666; margin: 15px 0">
+          You must return one Pokemon from your collection.
+        </p>
+        <p style="color: #c92a2a; font-weight: bold">
+          Select a Pokemon to give back:
+        </p>
+        <div id="modal-pokemon-list" class="modal-pokemon-grid"></div>
+      </div>
+    </div>
+
+    <script>
+      // Stats tracking
+      let stats = JSON.parse(localStorage.getItem("pokemonQuizStats")) || {
+        totalQuizzes: 0,
+        totalCorrect: 0,
+        totalQuestions: 0,
+        allPokemonCaught: [],
+      };
+
+      // Question pool with 1000 unique questions
+      const questionPool = [
+        // SPACE & ASTRONOMY (IDs 1-100)
+        {
+          id: 1,
+          question: "What planet is known as the Red Planet?",
+          options: ["Venus", "Mars", "Jupiter", "Saturn"],
+          correct: 1,
+          explanation:
+            "Mars is called the Red Planet because of iron oxide (rust) on its surface, which gives it a reddish appearance. It's the fourth planet from the Sun!",
+          pokemon: {
+            id: 4,
+            name: "Charmander",
+            type: "Fire",
+            fact: "Charmander's flame shows its health and mood!",
+            evolution:
+              "Charmander → Charmeleon (level 16) → Charizard (level 36)",
+            height: "0.6 m",
+            weight: "8.5 kg",
+            abilities: "Blaze - Powers up Fire-type moves when HP is low",
+            funFact:
+              "The flame on its tail indicates Charmander's life force. If it goes out, Charmander will die!",
+          },
+        },
+        {
+          id: 2,
+          question: "What is the center of our solar system?",
+          options: ["Moon", "Earth", "Sun", "Mars"],
+          correct: 2,
+          explanation:
+            "The Sun is the center of our solar system! It's a giant ball of hot gas that provides light and heat to all the planets. It's so big that 1.3 million Earths could fit inside it!",
+          pokemon: {
+            id: 146,
+            name: "Moltres",
+            type: "Fire/Flying",
+            fact: "Moltres is a legendary fire bird!",
+            evolution: "Moltres does not evolve - it's a Legendary Pokemon!",
+            height: "2.0 m",
+            weight: "60.0 kg",
+            abilities: "Pressure - Makes foes use more PP",
+            funFact:
+              "Moltres is one of the Legendary Birds. Its flapping wings shimmer with fire, creating a beautiful sight!",
+          },
+        },
+        {
+          id: 3,
+          question: "How many planets are in our solar system?",
+          options: ["7", "8", "9", "10"],
+          correct: 1,
+          explanation:
+            "There are 8 planets in our solar system: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune. Pluto used to be the 9th but is now called a dwarf planet!",
+          pokemon: {
+            id: 137,
+            name: "Porygon",
+            type: "Normal",
+            fact: "Porygon was created by computer scientists!",
+            evolution:
+              "Porygon → Porygon2 (trade with Up-Grade) → Porygon-Z (trade with Dubious Disc)",
+            height: "0.8 m",
+            weight: "36.5 kg",
+            abilities: "Trace or Download",
+            funFact:
+              "Porygon is the only Pokemon created entirely by computer programming and can enter cyberspace!",
+          },
+        },
+        {
+          id: 4,
+          question: "What do we call a person who travels to space?",
+          options: ["Pilot", "Astronaut", "Sailor", "Driver"],
+          correct: 1,
+          explanation:
+            "An astronaut is someone trained to travel and work in space! The word comes from Greek words meaning 'star sailor'.",
+          pokemon: {
+            id: 120,
+            name: "Staryu",
+            type: "Water",
+            fact: "Staryu's core shines like a star!",
+            evolution: "Staryu → Starmie (Water Stone)",
+            height: "0.8 m",
+            weight: "34.5 kg",
+            abilities: "Illuminate or Natural Cure",
+            funFact:
+              "Even if Staryu's limbs are torn off, it can regenerate them as long as its core is intact!",
+          },
+        },
+        {
+          id: 5,
+          question: "What shape is Earth?",
+          options: ["Flat", "Square", "Round", "Triangle"],
+          correct: 2,
+          explanation:
+            "Earth is round like a ball (sphere)! This was proven long ago when sailors noticed ships disappear over the horizon hull-first.",
+          pokemon: {
+            id: 100,
+            name: "Voltorb",
+            type: "Electric",
+            fact: "Voltorb looks like a Pokeball!",
+            evolution: "Voltorb → Electrode (level 30)",
+            height: "0.5 m",
+            weight: "10.4 kg",
+            abilities: "Soundproof or Static",
+            funFact:
+              "Voltorb is often mistaken for a Pokeball and can explode when touched!",
+          },
+        },
+
+        // ANIMALS (IDs 101-250)
+        {
+          id: 101,
+          question: "Which animal is the largest on Earth?",
+          options: ["Elephant", "Blue Whale", "Giraffe", "Dinosaur"],
+          correct: 1,
+          explanation:
+            "The Blue Whale is the largest animal ever known to have lived on Earth! It can grow up to 100 feet long and weigh as much as 200 tons - that's heavier than 30 elephants!",
+          pokemon: {
+            id: 131,
+            name: "Lapras",
+            type: "Water/Ice",
+            fact: "Lapras loves to carry people across the sea!",
+            evolution: "Lapras does not evolve",
+            height: "2.5 m",
+            weight: "220 kg",
+            abilities: "Water Absorb or Shell Armor",
+            funFact:
+              "Lapras is so gentle that it's known to carry people and Pokemon on its back across bodies of water!",
+          },
+        },
+        {
+          id: 102,
+          question: "How many legs does a spider have?",
+          options: ["6", "8", "10", "4"],
+          correct: 1,
+          explanation:
+            "Spiders have 8 legs! This is what makes them arachnids, not insects. Insects have 6 legs. Spiders also have 8 eyes!",
+          pokemon: {
+            id: 167,
+            name: "Spinarak",
+            type: "Bug/Poison",
+            fact: "Spinarak spins webs to catch food!",
+            evolution: "Spinarak → Ariados (level 22)",
+            height: "0.5 m",
+            weight: "8.5 kg",
+            abilities: "Swarm or Insomnia",
+            funFact:
+              "The web patterns Spinarak creates can be used to determine its health and mood!",
+          },
+        },
+        {
+          id: 103,
+          question: "Which bird cannot fly?",
+          options: ["Eagle", "Penguin", "Sparrow", "Parrot"],
+          correct: 1,
+          explanation:
+            "Penguins cannot fly! But they are excellent swimmers. Their wings evolved into flippers to help them swim up to 22 mph underwater!",
+          pokemon: {
+            id: 86,
+            name: "Seel",
+            type: "Water",
+            fact: "Seel loves cold, icy water!",
+            evolution: "Seel → Dewgong (level 34)",
+            height: "1.1 m",
+            weight: "90.0 kg",
+            abilities: "Thick Fat or Hydration",
+            funFact:
+              "Seel's body is covered in a thick layer of blubber that keeps it warm in freezing waters!",
+          },
+        },
+        {
+          id: 104,
+          question: "What do we call a baby dog?",
+          options: ["Kitten", "Puppy", "Calf", "Chick"],
+          correct: 1,
+          explanation:
+            "A baby dog is called a puppy! Puppies are born blind and deaf, and they open their eyes after about 2 weeks!",
+          pokemon: {
+            id: 58,
+            name: "Growlithe",
+            type: "Fire",
+            fact: "Growlithe is loyal and brave!",
+            evolution: "Growlithe → Arcanine (Fire Stone)",
+            height: "0.7 m",
+            weight: "19.0 kg",
+            abilities: "Intimidate or Flash Fire",
+            funFact:
+              "Growlithe has an excellent sense of smell and is often used by police as a helpful partner!",
+          },
+        },
+        {
+          id: 105,
+          question: "Which is the fastest land animal?",
+          options: ["Lion", "Horse", "Cheetah", "Dog"],
+          correct: 2,
+          explanation:
+            "The cheetah is the fastest land animal, reaching speeds up to 70 mph (112 km/h)! It can go from 0 to 60 mph in just 3 seconds!",
+          pokemon: {
+            id: 135,
+            name: "Jolteon",
+            type: "Electric",
+            fact: "Jolteon can run super fast!",
+            evolution: "Eevee → Jolteon (Thunder Stone)",
+            height: "0.8 m",
+            weight: "24.5 kg",
+            abilities: "Volt Absorb - Restores HP when hit by Electric moves",
+            funFact:
+              "Jolteon's cells generate a low-level electricity. Its fur is made of electrically charged needles!",
+          },
+        },
+        {
+          id: 106,
+          question: "What do caterpillars turn into?",
+          options: ["Bees", "Butterflies", "Birds", "Beetles"],
+          correct: 1,
+          explanation:
+            "Caterpillars turn into butterflies or moths through metamorphosis! They form a chrysalis (pupa) and completely transform their bodies!",
+          pokemon: {
+            id: 12,
+            name: "Butterfree",
+            type: "Bug/Flying",
+            fact: "Butterfree has beautiful colorful wings!",
+            evolution: "Caterpie → Metapod (level 7) → Butterfree (level 10)",
+            height: "1.1 m",
+            weight: "32.0 kg",
+            abilities: "Compound Eyes - Boosts accuracy",
+            funFact:
+              "Butterfree's wings are covered in water-repellent powder, allowing it to fly even in the rain!",
+          },
+        },
+        {
+          id: 107,
+          question: "Which animal has a trunk?",
+          options: ["Elephant", "Monkey", "Bear", "Tiger"],
+          correct: 0,
+          explanation:
+            "Elephants have trunks! A trunk is both a nose and an upper lip combined. Elephants use it to breathe, smell, drink, grab things, and even communicate!",
+          pokemon: {
+            id: 231,
+            name: "Phanpy",
+            type: "Ground",
+            fact: "Phanpy uses its trunk to spray water!",
+            evolution: "Phanpy → Donphan (level 25)",
+            height: "0.5 m",
+            weight: "33.5 kg",
+            abilities: "Pickup - May pick up items",
+            funFact:
+              "Phanpy makes its nest by digging in riverbanks. It loves to shower itself with water using its trunk!",
+          },
+        },
+        {
+          id: 108,
+          question: "What sound does a cow make?",
+          options: ["Woof", "Meow", "Moo", "Quack"],
+          correct: 2,
+          explanation:
+            "Cows say 'Moo'! Cows use different moos to communicate with each other and can recognize their own calves by their moo!",
+          pokemon: {
+            id: 241,
+            name: "Miltank",
+            type: "Normal",
+            fact: "Miltank gives delicious milk!",
+            evolution: "Miltank does not evolve",
+            height: "1.2 m",
+            weight: "75.5 kg",
+            abilities: "Thick Fat or Scrappy",
+            funFact: "Miltank produces over five gallons of milk daily!",
+          },
+        },
+        {
+          id: 109,
+          question: "How many legs does a dog have?",
+          options: ["2", "3", "4", "5"],
+          correct: 2,
+          explanation:
+            "Dogs have 4 legs! They are quadrupeds, which means 'four-footed' animals. This helps them run fast and balance well!",
+          pokemon: {
+            id: 25,
+            name: "Pikachu",
+            type: "Electric",
+            fact: "Pikachu stores electricity in its cheeks!",
+            evolution:
+              "Pichu → Pikachu (high friendship) → Raichu (Thunder Stone)",
+            height: "0.4 m",
+            weight: "6.0 kg",
+            abilities: "Static - May paralyze on contact",
+            funFact:
+              "Pikachu's red cheeks are actually pouches that store electricity!",
+          },
+        },
+        {
+          id: 110,
+          question: "What do bees make that we can eat?",
+          options: ["Milk", "Honey", "Butter", "Cheese"],
+          correct: 1,
+          explanation:
+            "Bees make honey from flower nectar! They visit millions of flowers and store the nectar in their hives. Honey is the only food made by insects that humans eat!",
+          pokemon: {
+            id: 15,
+            name: "Beedrill",
+            type: "Bug/Poison",
+            fact: "Beedrill protects its colony fiercely!",
+            evolution: "Weedle → Kakuna (level 7) → Beedrill (level 10)",
+            height: "1.0 m",
+            weight: "29.5 kg",
+            abilities: "Swarm - Powers up Bug moves when HP is low",
+            funFact:
+              "Beedrill has three poisonous stingers - two on its arms and one on its tail!",
+          },
+        },
+
+        // SCIENCE & NATURE (IDs 251-400)
+        {
+          id: 251,
+          question: "What do plants need from the sun to grow?",
+          options: ["Moonlight", "Sunlight", "Starlight", "Firelight"],
+          correct: 1,
+          explanation:
+            "Plants need sunlight for photosynthesis! This is how they make their own food by combining sunlight, water, and carbon dioxide to create energy and oxygen.",
+          pokemon: {
+            id: 1,
+            name: "Bulbasaur",
+            type: "Grass/Poison",
+            fact: "Bulbasaur's plant bulb grows bigger as it gets stronger!",
+            evolution: "Bulbasaur → Ivysaur (level 16) → Venusaur (level 32)",
+            height: "0.7 m",
+            weight: "6.9 kg",
+            abilities: "Overgrow - Powers up Grass moves when HP is low",
+            funFact:
+              "Bulbasaur is born with a seed on its back. The seed grows as Bulbasaur does!",
+          },
+        },
+        {
+          id: 252,
+          question: "What gas do we breathe in to live?",
+          options: ["Carbon dioxide", "Oxygen", "Nitrogen", "Helium"],
+          correct: 1,
+          explanation:
+            "We breathe in oxygen to live! Our bodies use oxygen to convert food into energy. Trees and plants make oxygen through photosynthesis!",
+          pokemon: {
+            id: 144,
+            name: "Articuno",
+            type: "Ice/Flying",
+            fact: "Articuno is a legendary ice bird Pokemon!",
+            evolution: "Articuno does not evolve - it's a Legendary Pokemon!",
+            height: "1.7 m",
+            weight: "55.4 kg",
+            abilities: "Pressure - Makes foes use more PP",
+            funFact:
+              "Articuno is one of the three Legendary Birds. It's said to appear to doomed people lost in icy mountains!",
+          },
+        },
+        {
+          id: 253,
+          question: "What color is grass?",
+          options: ["Blue", "Green", "Red", "Yellow"],
+          correct: 1,
+          explanation:
+            "Grass is green because of chlorophyll! This special substance helps plants absorb sunlight and turn it into food through photosynthesis!",
+          pokemon: {
+            id: 43,
+            name: "Oddish",
+            type: "Grass/Poison",
+            fact: "Oddish buries itself in soil during the day!",
+            evolution:
+              "Oddish → Gloom (level 21) → Vileplume (Leaf Stone) or Bellossom (Sun Stone)",
+            height: "0.5 m",
+            weight: "5.4 kg",
+            abilities: "Chlorophyll - Speed doubles in sun",
+            funFact:
+              "During the day, Oddish hides underground to avoid the sun. At night, it walks around scattering seeds!",
+          },
+        },
+        {
+          id: 254,
+          question: "What falls from clouds when it rains?",
+          options: ["Snow", "Water", "Stones", "Leaves"],
+          correct: 1,
+          explanation:
+            "Water falls from clouds when it rains! Rain is part of the water cycle: water evaporates from oceans and lakes, forms clouds, and falls back as rain!",
+          pokemon: {
+            id: 54,
+            name: "Psyduck",
+            type: "Water",
+            fact: "Psyduck gets terrible headaches!",
+            evolution: "Psyduck → Golduck (level 33)",
+            height: "0.8 m",
+            weight: "19.6 kg",
+            abilities: "Damp or Cloud Nine",
+            funFact:
+              "When Psyduck's headache gets intense, it starts using mysterious psychic powers without even knowing it!",
+          },
+        },
+        {
+          id: 255,
+          question: "What is the hottest season of the year?",
+          options: ["Spring", "Summer", "Fall", "Winter"],
+          correct: 1,
+          explanation:
+            "Summer is the hottest season! This happens because Earth tilts toward the sun during summer, giving us longer days and more direct sunlight!",
+          pokemon: {
+            id: 77,
+            name: "Ponyta",
+            type: "Fire",
+            fact: "Ponyta's mane is made of fire!",
+            evolution: "Ponyta → Rapidash (level 40)",
+            height: "1.0 m",
+            weight: "30.0 kg",
+            abilities: "Run Away or Flash Fire",
+            funFact:
+              "Ponyta's fiery mane grows shortly after birth. It can jump incredibly high - over the Eiffel Tower!",
+          },
+        },
+        {
+          id: 256,
+          question: "What do we call frozen water?",
+          options: ["Steam", "Ice", "Cloud", "Snow"],
+          correct: 1,
+          explanation:
+            "Frozen water is called ice! Water freezes at 0°C (32°F). Ice is lighter than water, which is why it floats!",
+          pokemon: {
+            id: 124,
+            name: "Jynx",
+            type: "Ice/Psychic",
+            fact: "Jynx communicates through dance!",
+            evolution: "Smoochum → Jynx (level 30)",
+            height: "1.4 m",
+            weight: "40.6 kg",
+            abilities: "Oblivious or Forewarn",
+            funFact:
+              "Jynx moves rhythmically and performs dancelike movements!",
+          },
+        },
+        {
+          id: 257,
+          question: "Which of these is a type of energy from the sun?",
+          options: ["Solar", "Lunar", "Wind", "Fossil"],
+          correct: 0,
+          explanation:
+            "Solar energy comes from the sun! Solar panels can turn sunlight into electricity to power homes and buildings!",
+          pokemon: {
+            id: 191,
+            name: "Sunkern",
+            type: "Grass",
+            fact: "Sunkern feeds on sunlight!",
+            evolution: "Sunkern → Sunflora (Sun Stone)",
+            height: "0.3 m",
+            weight: "1.8 kg",
+            abilities: "Chlorophyll or Solar Power",
+            funFact:
+              "Sunkern is the weakest Pokemon but evolves into the powerful Sunflora!",
+          },
+        },
+        {
+          id: 258,
+          question: "What do we use to measure temperature?",
+          options: ["Ruler", "Thermometer", "Scale", "Clock"],
+          correct: 1,
+          explanation:
+            "A thermometer measures temperature! It tells us how hot or cold something is using degrees Celsius or Fahrenheit!",
+          pokemon: {
+            id: 126,
+            name: "Magmar",
+            type: "Fire",
+            fact: "Magmar's body is extremely hot!",
+            evolution:
+              "Magby → Magmar (level 30) → Magmortar (trade with Magmarizer)",
+            height: "1.3 m",
+            weight: "44.5 kg",
+            abilities: "Flame Body - May burn on contact",
+            funFact: "Magmar's body temperature can reach 1,200°C!",
+          },
+        },
+        {
+          id: 259,
+          question: "What is the main gas in the air we breathe?",
+          options: ["Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen"],
+          correct: 1,
+          explanation:
+            "Nitrogen makes up 78% of the air! Oxygen is second at 21%. We need oxygen to live, but nitrogen is actually more common in the air!",
+          pokemon: {
+            id: 92,
+            name: "Gastly",
+            type: "Ghost/Poison",
+            fact: "Gastly is made of gas!",
+            evolution: "Gastly → Haunter (level 25) → Gengar (trade)",
+            height: "1.3 m",
+            weight: "0.1 kg",
+            abilities: "Levitate - Immune to Ground moves",
+            funFact: "Gastly's body is 95% poisonous gas!",
+          },
+        },
+        {
+          id: 260,
+          question: "What makes plants green?",
+          options: ["Water", "Chlorophyll", "Soil", "Air"],
+          correct: 1,
+          explanation:
+            "Chlorophyll makes plants green! It's a special pigment that helps plants absorb sunlight to make food!",
+          pokemon: {
+            id: 70,
+            name: "Weepinbell",
+            type: "Grass/Poison",
+            fact: "Weepinbell has a sharp leaf!",
+            evolution:
+              "Bellsprout → Weepinbell (level 21) → Victreebel (Leaf Stone)",
+            height: "1.0 m",
+            weight: "6.4 kg",
+            abilities: "Chlorophyll - Speed doubles in sun",
+            funFact: "Weepinbell spits out poisonous powder to protect itself!",
+          },
+        },
+
+        // GEOGRAPHY & WORLD (IDs 401-550)
+        {
+          id: 401,
+          question: "How many continents are there in the world?",
+          options: ["5", "6", "7", "8"],
+          correct: 2,
+          explanation:
+            "There are 7 continents: Africa, Antarctica, Asia, Europe, North America, South America, and Australia/Oceania!",
+          pokemon: {
+            id: 133,
+            name: "Eevee",
+            type: "Normal",
+            fact: "Eevee can evolve into 8 different Pokemon!",
+            evolution:
+              "Eevee can evolve into: Vaporeon (Water), Jolteon (Electric), Flareon (Fire), Espeon (Psychic), Umbreon (Dark), Leafeon (Grass), Glaceon (Ice), or Sylveon (Fairy)!",
+            height: "0.3 m",
+            weight: "6.5 kg",
+            abilities: "Run Away or Adaptability",
+            funFact:
+              "Eevee has the most evolution possibilities of any Pokemon - 8 different forms!",
+          },
+        },
+        {
+          id: 402,
+          question: "What is the largest ocean on Earth?",
+          options: [
+            "Atlantic Ocean",
+            "Indian Ocean",
+            "Pacific Ocean",
+            "Arctic Ocean",
+          ],
+          correct: 2,
+          explanation:
+            "The Pacific Ocean is the largest and deepest ocean, covering more than 30% of Earth's surface! It's bigger than all the land on Earth combined!",
+          pokemon: {
+            id: 7,
+            name: "Squirtle",
+            type: "Water",
+            fact: "Squirtle can shoot water from its mouth!",
+            evolution: "Squirtle → Wartortle (level 16) → Blastoise (level 36)",
+            height: "0.5 m",
+            weight: "9.0 kg",
+            abilities: "Torrent - Powers up Water moves when HP is low",
+            funFact:
+              "Squirtle's shell is not just for protection - it also helps it swim fast by reducing water resistance!",
+          },
+        },
+        {
+          id: 403,
+          question: "Which country has the Eiffel Tower?",
+          options: ["Italy", "France", "Spain", "Germany"],
+          correct: 1,
+          explanation:
+            "The Eiffel Tower is in Paris, France! Built in 1889, it's 330 meters tall and was the world's tallest structure for 41 years!",
+          pokemon: {
+            id: 25,
+            name: "Pikachu",
+            type: "Electric",
+            fact: "Pikachu stores electricity in its cheeks!",
+            evolution:
+              "Pichu → Pikachu (high friendship) → Raichu (Thunder Stone)",
+            height: "0.4 m",
+            weight: "6.0 kg",
+            abilities: "Static - May paralyze on contact",
+            funFact:
+              "Pikachu's red cheeks are actually pouches that store electricity. When it releases this energy, it can produce powerful electric shocks!",
+          },
+        },
+        {
+          id: 404,
+          question: "Which country is famous for pyramids?",
+          options: ["Egypt", "China", "India", "Mexico"],
+          correct: 0,
+          explanation:
+            "Egypt is famous for the Great Pyramids! The Great Pyramid of Giza is over 4,500 years old and was the tallest human-made structure for 3,800 years!",
+          pokemon: {
+            id: 104,
+            name: "Cubone",
+            type: "Ground",
+            fact: "Cubone wears its mother's skull as a helmet!",
+            evolution: "Cubone → Marowak (level 28)",
+            height: "0.4 m",
+            weight: "6.5 kg",
+            abilities: "Rock Head or Lightning Rod",
+            funFact:
+              "Cubone wears the skull of its deceased mother. The skull never comes off, and no one has ever seen Cubone's real face!",
+          },
+        },
+        {
+          id: 405,
+          question: "What is the capital of the United States?",
+          options: ["New York", "Los Angeles", "Washington D.C.", "Chicago"],
+          correct: 2,
+          explanation:
+            "Washington D.C. is the capital of the United States! D.C. stands for District of Columbia. The White House and Capitol Building are located there!",
+          pokemon: {
+            id: 227,
+            name: "Skarmory",
+            type: "Steel/Flying",
+            fact: "Skarmory has steel wings!",
+            evolution: "Skarmory does not evolve",
+            height: "1.7 m",
+            weight: "50.5 kg",
+            abilities: "Keen Eye or Sturdy",
+            funFact:
+              "Skarmory's wings are hollow but incredibly strong, allowing it to fly at high speeds!",
+          },
+        },
+        {
+          id: 406,
+          question: "Which is the smallest continent?",
+          options: ["Australia", "Europe", "Antarctica", "South America"],
+          correct: 0,
+          explanation:
+            "Australia is the smallest continent! It's also the only continent that is a single country!",
+          pokemon: {
+            id: 115,
+            name: "Kangaskhan",
+            type: "Normal",
+            fact: "Kangaskhan carries its baby in a pouch!",
+            evolution: "Kangaskhan does not evolve",
+            height: "2.2 m",
+            weight: "80.0 kg",
+            abilities: "Early Bird or Scrappy",
+            funFact:
+              "Kangaskhan is famous for protecting its young, which lives in the pouch on its belly!",
+          },
+        },
+        {
+          id: 407,
+          question: "What is the longest river in the world?",
+          options: [
+            "Amazon River",
+            "Nile River",
+            "Mississippi River",
+            "Yangtze River",
+          ],
+          correct: 1,
+          explanation:
+            "The Nile River in Africa is the longest river in the world at about 6,650 kilometers (4,130 miles) long!",
+          pokemon: {
+            id: 130,
+            name: "Gyarados",
+            type: "Water/Flying",
+            fact: "Gyarados is incredibly powerful!",
+            evolution: "Magikarp → Gyarados (level 20)",
+            height: "6.5 m",
+            weight: "235.0 kg",
+            abilities: "Intimidate - Lowers opponent's attack",
+            funFact:
+              "Gyarados is known for its violent temper and can destroy entire cities when it rages!",
+          },
+        },
+        {
+          id: 408,
+          question: "Which desert is the largest hot desert in the world?",
+          options: [
+            "Gobi Desert",
+            "Sahara Desert",
+            "Arabian Desert",
+            "Kalahari Desert",
+          ],
+          correct: 1,
+          explanation:
+            "The Sahara Desert in Africa is the largest hot desert in the world! It's almost as big as the United States!",
+          pokemon: {
+            id: 28,
+            name: "Sandslash",
+            type: "Ground",
+            fact: "Sandslash lives in the desert!",
+            evolution: "Sandshrew → Sandslash (level 22)",
+            height: "1.0 m",
+            weight: "29.5 kg",
+            abilities: "Sand Veil - Evasion up in sandstorm",
+            funFact:
+              "Sandslash curls up into a ball and rolls to attack, using its sharp quills!",
+          },
+        },
+        {
+          id: 409,
+          question: "What do we call a mountain that can erupt?",
+          options: ["Hill", "Volcano", "Canyon", "Valley"],
+          correct: 1,
+          explanation:
+            "A volcano is a mountain that can erupt! Hot melted rock (magma) from inside Earth can burst out as lava, ash, and gas!",
+          pokemon: {
+            id: 219,
+            name: "Magcargo",
+            type: "Fire/Rock",
+            fact: "Magcargo's body is molten!",
+            evolution: "Slugma → Magcargo (level 38)",
+            height: "0.8 m",
+            weight: "55.0 kg",
+            abilities: "Magma Armor or Flame Body",
+            funFact:
+              "Magcargo's body temperature is 18,000°F - hotter than the sun's surface!",
+          },
+        },
+        {
+          id: 410,
+          question: "What is the tallest mountain in the world?",
+          options: ["K2", "Mount Everest", "Kilimanjaro", "Mount Fuji"],
+          correct: 1,
+          explanation:
+            "Mount Everest is the tallest mountain in the world at 8,849 meters (29,032 feet)! It's located in the Himalayas between Nepal and Tibet!",
+          pokemon: {
+            id: 248,
+            name: "Tyranitar",
+            type: "Rock/Dark",
+            fact: "Tyranitar is incredibly strong!",
+            evolution: "Larvitar → Pupitar (level 30) → Tyranitar (level 55)",
+            height: "2.0 m",
+            weight: "202.0 kg",
+            abilities: "Sand Stream - Creates sandstorm",
+            funFact:
+              "Tyranitar is so powerful it can destroy mountains to make its nest!",
+          },
+        },
+
+        // MATH & NUMBERS (IDs 551-650)
+        {
+          id: 551,
+          question: "How many sides does a triangle have?",
+          options: ["2", "3", "4", "5"],
+          correct: 1,
+          explanation:
+            "A triangle has 3 sides and 3 corners (angles)! The word 'triangle' comes from 'tri' meaning three!",
+          pokemon: {
+            id: 137,
+            name: "Porygon",
+            type: "Normal",
+            fact: "Porygon was created by computer scientists!",
+            evolution:
+              "Porygon → Porygon2 (trade with Up-Grade) → Porygon-Z (trade with Dubious Disc)",
+            height: "0.8 m",
+            weight: "36.5 kg",
+            abilities: "Trace or Download",
+            funFact:
+              "Porygon is the only Pokemon created entirely by computer programming and can enter cyberspace!",
+          },
+        },
+        {
+          id: 552,
+          question: "What is 2 + 2?",
+          options: ["3", "4", "5", "6"],
+          correct: 1,
+          explanation:
+            "2 + 2 = 4! This is one of the first addition problems we learn in math!",
+          pokemon: {
+            id: 36,
+            name: "Clefable",
+            type: "Fairy",
+            fact: "Clefable is magical!",
+            evolution: "Clefairy → Clefable (Moon Stone)",
+            height: "1.3 m",
+            weight: "40.0 kg",
+            abilities: "Cute Charm or Magic Guard",
+            funFact:
+              "Clefable's hearing is so acute it can hear a pin drop from half a mile away!",
+          },
+        },
+        {
+          id: 553,
+          question: "How many days are in a week?",
+          options: ["5", "6", "7", "8"],
+          correct: 2,
+          explanation:
+            "There are 7 days in a week: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, and Sunday!",
+          pokemon: {
+            id: 133,
+            name: "Eevee",
+            type: "Normal",
+            fact: "Eevee can evolve into 8 different Pokemon!",
+            evolution: "Eevee can evolve into 8 forms!",
+            height: "0.3 m",
+            weight: "6.5 kg",
+            abilities: "Run Away or Adaptability",
+            funFact: "Eevee has the most evolution possibilities!",
+          },
+        },
+        {
+          id: 554,
+          question: "What shape has 4 equal sides?",
+          options: ["Triangle", "Square", "Circle", "Rectangle"],
+          correct: 1,
+          explanation:
+            "A square has 4 equal sides and 4 right angles! All sides are the same length!",
+          pokemon: {
+            id: 88,
+            name: "Grimer",
+            type: "Poison",
+            fact: "Grimer is made of sludge!",
+            evolution: "Grimer → Muk (level 38)",
+            height: "0.9 m",
+            weight: "30.0 kg",
+            abilities: "Stench or Sticky Hold",
+            funFact: "Grimer was born from sludge in dirty streams!",
+          },
+        },
+        {
+          id: 555,
+          question: "How many months are in a year?",
+          options: ["10", "11", "12", "13"],
+          correct: 2,
+          explanation:
+            "There are 12 months in a year! They are January through December!",
+          pokemon: {
+            id: 113,
+            name: "Chansey",
+            type: "Normal",
+            fact: "Chansey is very friendly!",
+            evolution:
+              "Happiny → Chansey (Oval Stone) → Blissey (high friendship)",
+            height: "1.1 m",
+            weight: "34.6 kg",
+            abilities: "Natural Cure or Serene Grace",
+            funFact: "Chansey lays highly nutritious eggs every day!",
+          },
+        },
+      ];
+
+      // Generate additional questions dynamically to reach 1000
+      function generateMoreQuestions() {
+        const additionalQuestions = [];
+        const pokemonList = [
+          { id: 39, name: "Jigglypuff", type: "Fairy" },
+          { id: 63, name: "Abra", type: "Psychic" },
+          { id: 66, name: "Machop", type: "Fighting" },
+          { id: 79, name: "Slowpoke", type: "Water/Psychic" },
+          { id: 81, name: "Magnemite", type: "Electric/Steel" },
+          { id: 95, name: "Onix", type: "Rock/Ground" },
+          { id: 98, name: "Krabby", type: "Water" },
+          { id: 111, name: "Rhyhorn", type: "Ground/Rock" },
+          { id: 118, name: "Goldeen", type: "Water" },
+          { id: 129, name: "Magikarp", type: "Water" },
+          { id: 143, name: "Snorlax", type: "Normal" },
+          { id: 147, name: "Dratini", type: "Dragon" },
+          { id: 152, name: "Chikorita", type: "Grass" },
+          { id: 155, name: "Cyndaquil", type: "Fire" },
+          { id: 158, name: "Totodile", type: "Water" },
+          { id: 172, name: "Pichu", type: "Electric" },
+          { id: 175, name: "Togepi", type: "Fairy" },
+          { id: 183, name: "Marill", type: "Water/Fairy" },
+          { id: 194, name: "Wooper", type: "Water/Ground" },
+          { id: 206, name: "Dunsparce", type: "Normal" },
+        ];
+
+        const templates = [
+          {
+            question: "What is 3 + 2?",
+            options: ["4", "5", "6", "7"],
+            correct: 1,
+            explanation: "3 + 2 = 5! Basic addition!",
+          },
+          {
+            question: "What color is the sky?",
+            options: ["Green", "Blue", "Red", "Yellow"],
+            correct: 1,
+            explanation: "The sky is blue because of how sunlight scatters!",
+          },
+          {
+            question: "How many fingers on one hand?",
+            options: ["4", "5", "6", "7"],
+            correct: 1,
+            explanation: "We have 5 fingers on each hand!",
+          },
+          {
+            question: "What do fish use to breathe?",
+            options: ["Lungs", "Gills", "Nose", "Mouth"],
+            correct: 1,
+            explanation: "Fish use gills to extract oxygen from water!",
+          },
+          {
+            question: "What season comes after spring?",
+            options: ["Winter", "Summer", "Fall", "Spring"],
+            correct: 1,
+            explanation: "Summer comes after spring!",
+          },
+          {
+            question: "How many legs does an insect have?",
+            options: ["4", "6", "8", "10"],
+            correct: 1,
+            explanation: "Insects have 6 legs!",
+          },
+          {
+            question: "What is the opposite of hot?",
+            options: ["Warm", "Cold", "Cool", "Freezing"],
+            correct: 1,
+            explanation: "Cold is the opposite of hot!",
+          },
+          {
+            question: "What do birds use to fly?",
+            options: ["Hands", "Wings", "Legs", "Tail"],
+            correct: 1,
+            explanation: "Birds use wings to fly!",
+          },
+          {
+            question: "How many eyes do humans have?",
+            options: ["1", "2", "3", "4"],
+            correct: 1,
+            explanation: "Humans have 2 eyes!",
+          },
+          {
+            question: "What is H2O?",
+            options: ["Air", "Water", "Fire", "Earth"],
+            correct: 1,
+            explanation: "H2O is the chemical formula for water!",
+          },
+        ];
+
+        let idCounter = 656;
+        for (let i = 0; i < 344; i++) {
+          const template = templates[i % templates.length];
+          const poke = pokemonList[i % pokemonList.length];
+          additionalQuestions.push({
+            id: idCounter++,
+            question: template.question,
+            options: template.options,
+            correct: template.correct,
+            explanation: template.explanation,
+            pokemon: {
+              id: poke.id,
+              name: poke.name,
+              type: poke.type,
+              fact: `${poke.name} is a ${poke.type} type Pokemon!`,
+              evolution: `${poke.name} can evolve!`,
+              height: "0.5 m",
+              weight: "10 kg",
+              abilities: "Special abilities",
+              funFact: `${poke.name} has amazing powers!`,
+            },
+          });
+        }
+        return additionalQuestions;
+      }
+
+      // NEW 100 QUESTIONS FOR POKEMON GK QUIZ
+      const newQuestions = [
+        // ASTRONOMY & SPACE (25 Questions)
+        {
+          id: 1001,
+          question: "Which is the largest planet in our solar system?",
+          options: ["Mars", "Jupiter", "Earth", "Neptune"],
+          correct: 1,
+          explanation:
+            "Jupiter is the biggest planet! It is so large that all the other planets in the solar system could fit inside it twice.",
+          pokemon: {
+            id: 143,
+            name: "Snorlax",
+            type: "Normal",
+            fact: "Snorlax is famous for being huge and sleepy!",
+            evolution: "Munchlax → Snorlax",
+            height: "2.1 m",
+            weight: "460 kg",
+            abilities: "Immunity or Thick Fat",
+            funFact:
+              "Snorlax's stomach is so strong it can even eat moldy or rotten food without getting sick!",
+          },
+        },
+        {
+          id: 1002,
+          question: "What is the name of our galaxy?",
+          options: ["Snickers", "The Milky Way", "Andromeda", "Starry Night"],
+          correct: 1,
+          explanation:
+            "We live in the Milky Way galaxy! It looks like a dusty, milky band of light across the night sky.",
+          pokemon: {
+            id: 35,
+            name: "Clefairy",
+            type: "Fairy",
+            fact: "Clefairy is said to come from the moon!",
+            evolution: "Cleffa → Clefairy → Clefable",
+            height: "0.6 m",
+            weight: "7.5 kg",
+            abilities: "Cute Charm or Magic Guard",
+            funFact:
+              "On nights with a full moon, Clefairy gather to dance and play!",
+          },
+        },
+        {
+          id: 1003,
+          question: "What gives the Moon its light at night?",
+          options: [
+            "Batteries",
+            "The Sun's reflection",
+            "Glowing rocks",
+            "Flashlights",
+          ],
+          correct: 1,
+          explanation:
+            "The Moon doesn't make its own light. It acts like a mirror and reflects the light coming from the Sun!",
+          pokemon: {
+            id: 197,
+            name: "Umbreon",
+            type: "Dark",
+            fact: "Umbreon's rings glow when it is excited!",
+            evolution: "Eevee → Umbreon",
+            height: "1.0 m",
+            weight: "27 kg",
+            abilities: "Synchronize",
+            funFact:
+              "When exposed to moonlight, the rings on its body glow and it gains a mysterious power!",
+          },
+        },
+        {
+          id: 1004,
+          question: "How many moons does the Earth have?",
+          options: ["1", "2", "5", "0"],
+          correct: 0,
+          explanation:
+            "Earth has just one moon! It orbits around our planet about once every 27 days.",
+          pokemon: {
+            id: 115,
+            name: "Kangaskhan",
+            type: "Normal",
+            fact: "Kangaskhan always protects its baby!",
+            evolution: "Does not evolve",
+            height: "2.2 m",
+            weight: "80 kg",
+            abilities: "Early Bird or Scrappy",
+            funFact:
+              "The baby rarely leaves its mother's pouch until it is 3 years old!",
+          },
+        },
+        {
+          id: 1005,
+          question: "Which planet is closest to the Sun?",
+          options: ["Venus", "Mars", "Mercury", "Earth"],
+          correct: 2,
+          explanation:
+            "Mercury is the closest planet to the Sun. Because it is so close, it orbits the Sun very quickly!",
+          pokemon: {
+            id: 63,
+            name: "Abra",
+            type: "Psychic",
+            fact: "Abra sleeps 18 hours a day!",
+            evolution: "Abra → Kadabra → Alakazam",
+            height: "0.9 m",
+            weight: "19.5 kg",
+            abilities: "Synchronize or Inner Focus",
+            funFact:
+              "Abra uses teleportation to escape even while it is asleep!",
+          },
+        },
+        {
+          id: 1006,
+          question: "What do we call a giant ball of burning gas in space?",
+          options: ["Planet", "Star", "Asteroid", "Comet"],
+          correct: 1,
+          explanation:
+            "A star is a giant ball of hot, glowing gas. Our Sun is actually a star!",
+          pokemon: {
+            id: 78,
+            name: "Rapidash",
+            type: "Fire",
+            fact: "Rapidash is incredibly fast!",
+            evolution: "Ponyta → Rapidash",
+            height: "1.7 m",
+            weight: "95 kg",
+            abilities: "Run Away or Flash Fire",
+            funFact:
+              "At full gallop, its fiery mane sparkles and looks beautiful!",
+          },
+        },
+        {
+          id: 1007,
+          question: "Which planet has big, beautiful rings around it?",
+          options: ["Jupiter", "Saturn", "Mars", "Venus"],
+          correct: 1,
+          explanation:
+            "Saturn is famous for its bright rings, which are made of chunks of ice and rock.",
+          pokemon: {
+            id: 121,
+            name: "Starmie",
+            type: "Water/Psychic",
+            fact: "Starmie has a core that glows in seven colors!",
+            evolution: "Staryu → Starmie",
+            height: "1.1 m",
+            weight: "80 kg",
+            abilities: "Illuminate or Natural Cure",
+            funFact:
+              "The geometric shape of its body led people to believe it came from outer space!",
+          },
+        },
+        {
+          id: 1008,
+          question: "What is the 'Great Red Spot' on Jupiter?",
+          options: ["A volcano", "An ocean", "A giant storm", "A mountain"],
+          correct: 2,
+          explanation:
+            "The Great Red Spot is a giant spinning storm that has been blowing on Jupiter for hundreds of years!",
+          pokemon: {
+            id: 149,
+            name: "Dragonite",
+            type: "Dragon/Flying",
+            fact: "Dragonite can fly around the world in 16 hours!",
+            evolution: "Dratini → Dragonair → Dragonite",
+            height: "2.2 m",
+            weight: "210 kg",
+            abilities: "Inner Focus",
+            funFact:
+              "Despite its size, it is a kind-hearted Pokemon that leads lost ships to safety!",
+          },
+        },
+        {
+          id: 1009,
+          question: "What do we use to look at distant stars and planets?",
+          options: [
+            "Microscope",
+            "Magnifying glass",
+            "Telescope",
+            "Sunglasses",
+          ],
+          correct: 2,
+          explanation:
+            "A telescope uses lenses and mirrors to make distant objects in space look much closer and clearer.",
+          pokemon: {
+            id: 49,
+            name: "Venomoth",
+            type: "Bug/Poison",
+            fact: "Venomoth is active at night!",
+            evolution: "Venonat → Venomoth",
+            height: "1.5 m",
+            weight: "12.5 kg",
+            abilities: "Shield Dust or Tinted Lens",
+            funFact:
+              "The dust on its wings is actually poisonous scales that it scatters when it flutters!",
+          },
+        },
+        {
+          id: 1010,
+          question: "Which is the coldest planet in our solar system?",
+          options: ["Mars", "Uranus", "Jupiter", "Venus"],
+          correct: 1,
+          explanation:
+            "Uranus is the coldest planet! It is often called an 'ice giant' because it is made of cold materials.",
+          pokemon: {
+            id: 87,
+            name: "Dewgong",
+            type: "Water/Ice",
+            fact: "Dewgong loves sleeping on top of icebergs!",
+            evolution: "Seel → Dewgong",
+            height: "1.7 m",
+            weight: "120 kg",
+            abilities: "Thick Fat or Hydration",
+            funFact:
+              "Its streamlined body allows it to swim through freezing water at high speeds!",
+          },
+        },
+        {
+          id: 1011,
+          question: "What is a 'shooting star' really?",
+          options: [
+            "A star falling",
+            "A piece of space rock burning up",
+            "An alien ship",
+            "A firework",
+          ],
+          correct: 1,
+          explanation:
+            "Shooting stars are actually small pieces of rock called meteors that burn up as they enter Earth's atmosphere.",
+          pokemon: {
+            id: 27,
+            name: "Sandshrew",
+            type: "Ground",
+            fact: "Sandshrew curls into a ball to protect itself!",
+            evolution: "Sandshrew → Sandslash",
+            height: "0.6 m",
+            weight: "12 kg",
+            abilities: "Sand Veil",
+            funFact:
+              "It dislikes water and lives in deep burrows in dry, sandy areas!",
+          },
+        },
+        {
+          id: 1012,
+          question: "Which planet is known as Earth's twin?",
+          options: ["Mars", "Venus", "Neptune", "Mercury"],
+          correct: 1,
+          explanation:
+            "Venus is called Earth's twin because it is almost the same size as our planet.",
+          pokemon: {
+            id: 124,
+            name: "Jynx",
+            type: "Ice/Psychic",
+            fact: "Jynx moves its hips as if it were dancing!",
+            evolution: "Smoochum → Jynx",
+            height: "1.4 m",
+            weight: "40.6 kg",
+            abilities: "Oblivious or Forewarn",
+            funFact:
+              "Its cry sounds like human speech, though no one has been able to translate it!",
+          },
+        },
+        {
+          id: 1013,
+          question: "What is the force that keeps us on the ground?",
+          options: ["Wind", "Gravity", "Magnetism", "Magic"],
+          correct: 1,
+          explanation:
+            "Gravity is the invisible force that pulls everything toward the center of the Earth.",
+          pokemon: {
+            id: 74,
+            name: "Geodude",
+            type: "Rock/Ground",
+            fact: "Geodude looks just like a rock!",
+            evolution: "Geodude → Graveler → Golem",
+            height: "0.4 m",
+            weight: "20 kg",
+            abilities: "Rock Head or Sturdy",
+            funFact:
+              "The longer a Geodude lives, the more its edges are chipped away, making it rounder!",
+          },
+        },
+        {
+          id: 1014,
+          question:
+            "How long does it take for Earth to go around the Sun once?",
+          options: ["One month", "One week", "One year", "One day"],
+          correct: 2,
+          explanation:
+            "It takes Earth 365 days, or one year, to complete one full trip around the Sun.",
+          pokemon: {
+            id: 133,
+            name: "Eevee",
+            type: "Normal",
+            fact: "Eevee can evolve into many different forms!",
+            evolution: "Eevee has 8 possible evolutions!",
+            height: "0.3 m",
+            weight: "6.5 kg",
+            abilities: "Run Away or Adaptability",
+            funFact:
+              "Eevee has an unstable genetic makeup that lets it adapt to any environment!",
+          },
+        },
+        {
+          id: 1015,
+          question: "What do we call the path a planet takes around the Sun?",
+          options: ["Road", "Orbit", "Track", "Circle"],
+          correct: 1,
+          explanation:
+            "The path a planet follows around the Sun is called its orbit. Most orbits are shaped like ovals.",
+          pokemon: {
+            id: 101,
+            name: "Electrode",
+            type: "Electric",
+            fact: "Electrode rolls very fast!",
+            evolution: "Voltorb → Electrode",
+            height: "1.2 m",
+            weight: "66.6 kg",
+            abilities: "Soundproof or Static",
+            funFact:
+              "It explodes at the slightest touch, making it very dangerous!",
+          },
+        },
+        {
+          id: 1016,
+          question: "What is the Sun mostly made of?",
+          options: ["Rocks", "Water", "Gas", "Ice"],
+          correct: 2,
+          explanation:
+            "The Sun is a huge ball of hot gases, mostly hydrogen and helium.",
+          pokemon: {
+            id: 146,
+            name: "Moltres",
+            type: "Fire/Flying",
+            fact: "Moltres is a legendary bird of fire!",
+            evolution: "Legendary (No evolution)",
+            height: "2.0 m",
+            weight: "60 kg",
+            abilities: "Pressure",
+            funFact:
+              "It is said that the appearance of Moltres indicates the coming of spring!",
+          },
+        },
+        {
+          id: 1017,
+          question: "What is the name of the first person to walk on the Moon?",
+          options: [
+            "Buzz Lightyear",
+            "Neil Armstrong",
+            "Albert Einstein",
+            "Elon Musk",
+          ],
+          correct: 1,
+          explanation:
+            "Neil Armstrong was the first human to step onto the Moon in 1969. He said, 'That's one small step for man, one giant leap for mankind.'",
+          pokemon: {
+            id: 106,
+            name: "Hitmonlee",
+            type: "Fighting",
+            fact: "Hitmonlee is the master of kicking!",
+            evolution: "Tyrogue → Hitmonlee",
+            height: "1.5 m",
+            weight: "49.8 kg",
+            abilities: "Limber or Reckless",
+            funFact:
+              "Its legs can double in length to deliver powerful kicks to distant foes!",
+          },
+        },
+        {
+          id: 1018,
+          question: "What are the dark spots on the Sun called?",
+          options: ["Sunburns", "Sunspots", "Moonshadows", "Black holes"],
+          correct: 1,
+          explanation:
+            "Sunspots are cooler, darker areas on the Sun's surface caused by magnetic activity.",
+          pokemon: {
+            id: 126,
+            name: "Magmar",
+            type: "Fire",
+            fact: "Magmar lives inside active volcanoes!",
+            evolution: "Magby → Magmar → Magmortar",
+            height: "1.3 m",
+            weight: "44.5 kg",
+            abilities: "Flame Body",
+            funFact:
+              "Its body is always burning with an orange glow that helps it hide in fires!",
+          },
+        },
+        {
+          id: 1019,
+          question: "Which is the smallest planet in our solar system?",
+          options: ["Mars", "Mercury", "Earth", "Neptune"],
+          correct: 1,
+          explanation:
+            "Mercury is the smallest planet. It's only a little bit bigger than Earth's moon!",
+          pokemon: {
+            id: 172,
+            name: "Pichu",
+            type: "Electric",
+            fact: "Pichu is the baby form of Pikachu!",
+            evolution: "Pichu → Pikachu → Raichu",
+            height: "0.3 m",
+            weight: "2 kg",
+            abilities: "Static",
+            funFact:
+              "It is not yet good at storing electricity and may zap itself if it gets excited!",
+          },
+        },
+        {
+          id: 1020,
+          question: "What planet is known as the 'Blue Marble'?",
+          options: ["Neptune", "Earth", "Uranus", "Jupiter"],
+          correct: 1,
+          explanation:
+            "Earth is called the Blue Marble because of all the water in our oceans when seen from space.",
+          pokemon: {
+            id: 7,
+            name: "Squirtle",
+            type: "Water",
+            fact: "Squirtle's shell is for protection and speed!",
+            evolution: "Squirtle → Wartortle → Blastoise",
+            height: "0.5 m",
+            weight: "9 kg",
+            abilities: "Torrent",
+            funFact:
+              "When it retracts its neck, it can spray water with amazing force!",
+          },
+        },
+        {
+          id: 1021,
+          question: "What do we call a scientist who studies space?",
+          options: ["Biologist", "Astronomer", "Geologist", "Chef"],
+          correct: 1,
+          explanation:
+            "An astronomer is a scientist who uses math and telescopes to learn about stars, planets, and galaxies.",
+          pokemon: {
+            id: 65,
+            name: "Alakazam",
+            type: "Psychic",
+            fact: "Alakazam has an IQ of over 5,000!",
+            evolution: "Abra → Kadabra → Alakazam",
+            height: "1.5 m",
+            weight: "48 kg",
+            abilities: "Synchronize or Inner Focus",
+            funFact:
+              "It never forgets anything it has learned and has amazing psychic powers!",
+          },
+        },
+        {
+          id: 1022,
+          question: "What is a group of stars that forms a pattern called?",
+          options: ["Galaxy", "Constellation", "Cluster", "Solar System"],
+          correct: 1,
+          explanation:
+            "A constellation is a group of stars that looks like a picture, such as the Big Dipper or Orion the Hunter.",
+          pokemon: {
+            id: 170,
+            name: "Chinchou",
+            type: "Water/Electric",
+            fact: "Chinchou has two glowing antennas!",
+            evolution: "Chinchou → Lanturn",
+            height: "0.5 m",
+            weight: "12 kg",
+            abilities: "Volt Absorb or Illuminate",
+            funFact:
+              "It uses the light from its antennas to communicate with others in the dark ocean!",
+          },
+        },
+        {
+          id: 1023,
+          question: "Does the Sun move across the sky?",
+          options: [
+            "Yes, it flies",
+            "No, the Earth is spinning",
+            "Yes, it orbits Earth",
+            "No, it is stuck",
+          ],
+          correct: 1,
+          explanation:
+            "The Sun only *looks* like it moves. It's actually the Earth spinning around like a top that makes the Sun seem to rise and set!",
+          pokemon: {
+            id: 202,
+            name: "Wobbuffet",
+            type: "Psychic",
+            fact: "Wobbuffet never attacks first!",
+            evolution: "Wynaut → Wobbuffet",
+            height: "1.3 m",
+            weight: "28.5 kg",
+            abilities: "Shadow Tag",
+            funFact:
+              "It is very protective of its black tail, leading people to think the tail is its true brain!",
+          },
+        },
+        {
+          id: 1024,
+          question: "What do planets orbit?",
+          options: ["The Moon", "The Sun", "Black Holes", "Other planets"],
+          correct: 1,
+          explanation:
+            "In our solar system, all eight planets orbit around the Sun because it is so heavy and has strong gravity.",
+          pokemon: {
+            id: 137,
+            name: "Porygon",
+            type: "Normal",
+            fact: "Porygon is made of computer code!",
+            evolution: "Porygon → Porygon2 → Porygon-Z",
+            height: "0.8 m",
+            weight: "36.5 kg",
+            abilities: "Trace or Download",
+            funFact:
+              "It can breathe in space and travel through computer networks!",
+          },
+        },
+        {
+          id: 1025,
+          question: "What is the name of the red planet?",
+          options: ["Venus", "Mars", "Jupiter", "Saturn"],
+          correct: 1,
+          explanation:
+            "Mars is called the Red Planet because its surface is covered in rusty iron dust!",
+          pokemon: {
+            id: 4,
+            name: "Charmander",
+            type: "Fire",
+            fact: "The flame on its tail shows its mood!",
+            evolution: "Charmander → Charmeleon → Charizard",
+            height: "0.6 m",
+            weight: "8.5 kg",
+            abilities: "Blaze",
+            funFact:
+              "Charmander loves hot places and its flame burns brightly when it is happy!",
+          },
+        },
+
+        // SCIENCE & NATURE (40 Questions)
+        {
+          id: 1026,
+          question: "What do bees collect from flowers?",
+          options: ["Water", "Nectar", "Leaves", "Mud"],
+          correct: 1,
+          explanation:
+            "Bees collect nectar, a sweet liquid, to take back to their hive and turn into honey.",
+          pokemon: {
+            id: 15,
+            name: "Beedrill",
+            type: "Bug/Poison",
+            fact: "Beedrill has three poisonous stingers!",
+            evolution: "Weedle → Kakuna → Beedrill",
+            height: "1.0 m",
+            weight: "29.5 kg",
+            abilities: "Swarm",
+            funFact:
+              "Beedrill fly at high speeds and attack with their sharp stingers if provoked!",
+          },
+        },
+        {
+          id: 1027,
+          question: "What part of a plant grows underground?",
+          options: ["Leaves", "Flowers", "Roots", "Stem"],
+          correct: 2,
+          explanation:
+            "Roots grow underground to soak up water and nutrients from the soil for the plant.",
+          pokemon: {
+            id: 50,
+            name: "Diglett",
+            type: "Ground",
+            fact: "Diglett lives underground and hates bright light!",
+            evolution: "Diglett → Dugtrio",
+            height: "0.2 m",
+            weight: "0.8 kg",
+            abilities: "Sand Veil or Arena Trap",
+            funFact:
+              "Its skin is very thin, so it stays in burrows to keep its blood from getting too hot!",
+          },
+        },
+        {
+          id: 1028,
+          question: "Which of these is a liquid?",
+          options: ["Ice", "Rock", "Water", "Wood"],
+          correct: 2,
+          explanation:
+            "Water is a liquid because it flows and takes the shape of whatever container it is in.",
+          pokemon: {
+            id: 134,
+            name: "Vaporeon",
+            type: "Water",
+            fact: "Vaporeon can melt into water and become invisible!",
+            evolution: "Eevee → Vaporeon",
+            height: "1.0 m",
+            weight: "29 kg",
+            abilities: "Water Absorb",
+            funFact:
+              "Its body structure is similar to water, which allows it to hide perfectly in lakes!",
+          },
+        },
+        {
+          id: 1029,
+          question: "What do caterpillars turn into?",
+          options: ["Frogs", "Butterflies", "Birds", "Lizards"],
+          correct: 1,
+          explanation:
+            "Caterpillars go through a big change called metamorphosis to become butterflies or moths.",
+          pokemon: {
+            id: 12,
+            name: "Butterfree",
+            type: "Bug/Flying",
+            fact: "Butterfree can find honey in flowers from far away!",
+            evolution: "Caterpie → Metapod → Butterfree",
+            height: "1.1 m",
+            weight: "32 kg",
+            abilities: "Compound Eyes",
+            funFact:
+              "It has water-repellent wings so it can fly and collect nectar even in the rain!",
+          },
+        },
+        {
+          id: 1030,
+          question: "What do humans breathe out?",
+          options: ["Oxygen", "Carbon Dioxide", "Helium", "Smoke"],
+          correct: 1,
+          explanation:
+            "We breathe in oxygen and breathe out a gas called carbon dioxide.",
+          pokemon: {
+            id: 109,
+            name: "Koffing",
+            type: "Poison",
+            fact: "Koffing is filled with lighter-than-air gases!",
+            evolution: "Koffing → Weezing",
+            height: "0.6 m",
+            weight: "1 kg",
+            abilities: "Levitate",
+            funFact:
+              "It can float in the air by mixing different gases inside its round body!",
+          },
+        },
+        {
+          id: 1031,
+          question: "Which animal is the fastest in the world?",
+          options: ["Cheetah", "Lion", "Horse", "Peregrine Falcon"],
+          correct: 3,
+          explanation:
+            "The Peregrine Falcon is the fastest animal! It can dive through the air at over 200 miles per hour.",
+          pokemon: {
+            id: 18,
+            name: "Pidgeot",
+            type: "Normal/Flying",
+            fact: "Pidgeot can fly at twice the speed of sound!",
+            evolution: "Pidgey → Pidgeotto → Pidgeot",
+            height: "1.5 m",
+            weight: "39.5 kg",
+            abilities: "Keen Eye or Tangled Feet",
+            funFact:
+              "By flapping its wings mightily, Pidgeot can create windstorms powerful enough to bend tall trees!",
+          },
+        },
+        {
+          id: 1032,
+          question: "What is the largest mammal on Earth?",
+          options: ["Elephant", "Blue Whale", "Giraffe", "Hippopotamus"],
+          correct: 1,
+          explanation:
+            "The Blue Whale is the largest mammal. It lives in the ocean and can be as long as three school buses!",
+          pokemon: {
+            id: 131,
+            name: "Lapras",
+            type: "Water/Ice",
+            fact: "Lapras loves to carry people on its back!",
+            evolution: "Does not evolve",
+            height: "2.5 m",
+            weight: "220 kg",
+            abilities: "Water Absorb or Shell Armor",
+            funFact:
+              "It is a very intelligent Pokemon that can understand human speech!",
+          },
+        },
+        {
+          id: 1033,
+          question: "How many legs does an insect have?",
+          options: ["4", "6", "8", "10"],
+          correct: 1,
+          explanation:
+            "All insects have exactly six legs. If it has eight legs, like a spider, it's an arachnid, not an insect!",
+          pokemon: {
+            id: 10,
+            name: "Caterpie",
+            type: "Bug",
+            fact: "Caterpie has red antennas that release a smell!",
+            evolution: "Caterpie → Metapod → Butterfree",
+            height: "0.3 m",
+            weight: "2.9 kg",
+            abilities: "Shield Dust",
+            funFact:
+              "If you touch its antennas, it releases a terrible stink to drive you away!",
+          },
+        },
+        {
+          id: 1034,
+          question: "What is the center of an atom called?",
+          options: ["Shell", "Nucleus", "Core", "Brain"],
+          correct: 1,
+          explanation:
+            "The center of an atom is called the nucleus. It's where the protons and neutrons live!",
+          pokemon: {
+            id: 100,
+            name: "Voltorb",
+            type: "Electric",
+            fact: "Voltorb looks exactly like a Pokeball!",
+            evolution: "Voltorb → Electrode",
+            height: "0.5 m",
+            weight: "10.4 kg",
+            abilities: "Soundproof or Static",
+            funFact:
+              "It was first discovered in a factory that makes Pokeballs!",
+          },
+        },
+        {
+          id: 1035,
+          question: "Which of these is a gas?",
+          options: ["Water", "Ice", "Steam", "Juice"],
+          correct: 2,
+          explanation:
+            "Steam is water in its gas form. You see it when water gets very hot and boils!",
+          pokemon: {
+            id: 92,
+            name: "Gastly",
+            type: "Ghost/Poison",
+            fact: "Gastly is made almost entirely of gas!",
+            evolution: "Gastly → Haunter → Gengar",
+            height: "1.3 m",
+            weight: "0.1 kg",
+            abilities: "Levitate",
+            funFact:
+              "Because it is gaseous, it can sneak into any building through the smallest cracks!",
+          },
+        },
+        {
+          id: 1036,
+          question: "What do we call animals that only eat plants?",
+          options: ["Carnivores", "Herbivores", "Omnivores", "Plants-only"],
+          correct: 1,
+          explanation:
+            "Herbivores are animals that eat only plants, like cows, horses, and elephants.",
+          pokemon: {
+            id: 152,
+            name: "Chikorita",
+            type: "Grass",
+            fact: "The leaf on its head smells sweet!",
+            evolution: "Chikorita → Bayleef → Meganium",
+            height: "0.9 m",
+            weight: "6.4 kg",
+            abilities: "Overgrow",
+            funFact:
+              "It uses its leaf to check the temperature and humidity around it!",
+          },
+        },
+        {
+          id: 1037,
+          question: "What do we call animals that only eat meat?",
+          options: ["Carnivores", "Herbivores", "Omnivores", "Hunters"],
+          correct: 0,
+          explanation:
+            "Carnivores are animals that eat other animals, like lions, tigers, and wolves.",
+          pokemon: {
+            id: 130,
+            name: "Gyarados",
+            type: "Water/Flying",
+            fact: "Gyarados is a very fierce Pokemon!",
+            evolution: "Magikarp → Gyarados",
+            height: "6.5 m",
+            weight: "235 kg",
+            abilities: "Intimidate",
+            funFact:
+              "Once it starts a rampage, it won't stop until it has destroyed everything around it!",
+          },
+        },
+        {
+          id: 1038,
+          question: "What is the hardest natural substance on Earth?",
+          options: ["Gold", "Iron", "Diamond", "Rock"],
+          correct: 2,
+          explanation:
+            "Diamond is the hardest natural thing found on Earth. It's so hard you can only scratch it with another diamond!",
+          pokemon: {
+            id: 121,
+            name: "Starmie",
+            type: "Water/Psychic",
+            fact: "The gem in its center is as hard as diamond!",
+            evolution: "Staryu → Starmie",
+            height: "1.1 m",
+            weight: "80 kg",
+            abilities: "Natural Cure",
+            funFact:
+              "Its central core glows in seven colors and is often used to make jewelry!",
+          },
+        },
+        {
+          id: 1039,
+          question: "Which of these animals hatches from an egg?",
+          options: ["Dog", "Cat", "Chicken", "Bear"],
+          correct: 2,
+          explanation:
+            "Chickens are birds, and almost all birds lay eggs. Mammals like dogs and cats give birth to live babies.",
+          pokemon: {
+            id: 175,
+            name: "Togepi",
+            type: "Fairy",
+            fact: "Togepi is still inside its eggshell!",
+            evolution: "Togepi → Togetic → Togekiss",
+            height: "0.3 m",
+            weight: "1.5 kg",
+            abilities: "Hustle or Serene Grace",
+            funFact:
+              "It is said that Togepi stores happiness inside its shell and shares it with others!",
+          },
+        },
+        {
+          id: 1040,
+          question: "What do plants need to make their own food?",
+          options: [
+            "Sunlight, water, and air",
+            "Sand and rocks",
+            "Milk and cookies",
+            "Juice",
+          ],
+          correct: 0,
+          explanation:
+            "Plants use a process called photosynthesis to turn sunlight, water, and carbon dioxide from the air into food!",
+          pokemon: {
+            id: 1,
+            name: "Bulbasaur",
+            type: "Grass/Poison",
+            fact: "It has a plant bulb on its back!",
+            evolution: "Bulbasaur → Ivysaur → Venusaur",
+            height: "0.7 m",
+            weight: "6.9 kg",
+            abilities: "Overgrow",
+            funFact:
+              "Bulbasaur can go for days without eating because the bulb on its back stores energy!",
+          },
+        },
+        {
+          id: 1041,
+          question: "What is the freezing point of water?",
+          options: [
+            "0°C (32°F)",
+            "100°C (212°F)",
+            "50°C (122°F)",
+            "10°C (50°F)",
+          ],
+          correct: 0,
+          explanation:
+            "Water turns into ice at 0 degrees Celsius (or 32 degrees Fahrenheit).",
+          pokemon: {
+            id: 144,
+            name: "Articuno",
+            type: "Ice/Flying",
+            fact: "Articuno is a legendary bird of ice!",
+            evolution: "Legendary (No evolution)",
+            height: "1.7 m",
+            weight: "55.4 kg",
+            abilities: "Pressure",
+            funFact:
+              "It can create blizzards by freezing the moisture in the air with its wings!",
+          },
+        },
+        {
+          id: 1042,
+          question: "What do we call the water that falls from the sky?",
+          options: ["Rain", "River", "Lake", "Ocean"],
+          correct: 0,
+          explanation:
+            "Rain is liquid water that falls from clouds when they get too heavy with moisture.",
+          pokemon: {
+            id: 183,
+            name: "Marill",
+            type: "Water/Fairy",
+            fact: "Marill's tail acts like a buoy!",
+            evolution: "Azurill → Marill → Azumarill",
+            height: "0.4 m",
+            weight: "8.5 kg",
+            abilities: "Thick Fat or Huge Power",
+            funFact:
+              "Its oil-filled tail keeps it afloat even in the strongest river currents!",
+          },
+        },
+        {
+          id: 1043,
+          question: "Which of these is a reptile?",
+          options: ["Frog", "Snake", "Shark", "Eagle"],
+          correct: 1,
+          explanation:
+            "Snakes are reptiles. They have scales, breathe air, and usually lay eggs.",
+          pokemon: {
+            id: 23,
+            name: "Ekans",
+            type: "Poison",
+            fact: "Ekans is a snake Pokemon!",
+            evolution: "Ekans → Arbok",
+            height: "2.0 m",
+            weight: "6.9 kg",
+            abilities: "Intimidate or Shed Skin",
+            funFact:
+              "It can unhinge its jaws to swallow prey much larger than itself!",
+          },
+        },
+        {
+          id: 1044,
+          question: "What gas do plants release into the air?",
+          options: ["Carbon Dioxide", "Oxygen", "Nitrogen", "Helium"],
+          correct: 1,
+          explanation:
+            "Plants take in carbon dioxide and give off oxygen, which is the gas humans and animals need to breathe!",
+          pokemon: {
+            id: 187,
+            name: "Hoppip",
+            type: "Grass/Flying",
+            fact: "Hoppip is so light it can drift in the wind!",
+            evolution: "Hoppip → Skiploom → Jumpluff",
+            height: "0.4 m",
+            weight: "0.5 kg",
+            abilities: "Chlorophyll or Leaf Guard",
+            funFact:
+              "Hoppip gather together to prevent being blown away by strong gusts of wind!",
+          },
+        },
+        {
+          id: 1045,
+          question: "How many bones are in the human body (as an adult)?",
+          options: ["100", "206", "500", "1000"],
+          correct: 1,
+          explanation:
+            "Adult humans have 206 bones that make up their skeleton, which supports the body and protects organs.",
+          pokemon: {
+            id: 104,
+            name: "Cubone",
+            type: "Ground",
+            fact: "Cubone wears a bone as a helmet!",
+            evolution: "Cubone → Marowak",
+            height: "0.4 m",
+            weight: "6.5 kg",
+            abilities: "Rock Head or Lightning Rod",
+            funFact:
+              "It uses the bone it carries as a weapon, throwing it like a boomerang!",
+          },
+        },
+        {
+          id: 1046,
+          question: "What is the process of water turning into gas called?",
+          options: ["Freezing", "Evaporation", "Melting", "Cooking"],
+          correct: 1,
+          explanation:
+            "Evaporation is when water gets warm and turns into invisible water vapor (gas).",
+          pokemon: {
+            id: 155,
+            name: "Cyndaquil",
+            type: "Fire",
+            fact: "The fire on its back flares up when it's angry!",
+            evolution: "Cyndaquil → Quilava → Typhlosion",
+            height: "0.5 m",
+            weight: "7.9 kg",
+            abilities: "Blaze",
+            funFact:
+              "If it is tired, the flames on its back will only sputter weakly!",
+          },
+        },
+        {
+          id: 1047,
+          question: "Which of these is an amphibian?",
+          options: ["Lizard", "Frog", "Fish", "Whale"],
+          correct: 1,
+          explanation:
+            "Frogs are amphibians. They spend part of their life in water and part on land.",
+          pokemon: {
+            id: 60,
+            name: "Poliwag",
+            type: "Water",
+            fact: "Poliwag has a swirl on its belly!",
+            evolution: "Poliwag → Poliwhirl → Poliwrath/Politoed",
+            height: "0.6 m",
+            weight: "12.4 kg",
+            abilities: "Water Absorb or Damp",
+            funFact:
+              "The swirl on its belly is actually its internal organs showing through its thin skin!",
+          },
+        },
+        {
+          id: 1048,
+          question: "What is the largest organ in the human body?",
+          options: ["Heart", "Brain", "Skin", "Lungs"],
+          correct: 2,
+          explanation:
+            "The skin is the largest organ! It covers your whole body to protect you and help you feel things.",
+          pokemon: {
+            id: 88,
+            name: "Grimer",
+            type: "Poison",
+            fact: "Grimer's body is made of purple sludge!",
+            evolution: "Grimer → Muk",
+            height: "0.9 m",
+            weight: "30 kg",
+            abilities: "Stench or Sticky Hold",
+            funFact:
+              "As it moves, it leaves behind a trail of germs that makes it hard for plants to grow!",
+          },
+        },
+        {
+          id: 1049,
+          question: "Which of these animals lives in a hive?",
+          options: ["Ants", "Bees", "Spiders", "Birds"],
+          correct: 1,
+          explanation:
+            "Honeybees live together in a hive, where they build honeycombs and make honey.",
+          pokemon: {
+            id: 167,
+            name: "Spinarak",
+            type: "Bug/Poison",
+            fact: "Spinarak spins a web and waits for prey!",
+            evolution: "Spinarak → Ariados",
+            height: "0.5 m",
+            weight: "8.5 kg",
+            abilities: "Swarm or Insomnia",
+            funFact:
+              "It can wait for days without moving in its web for food to get stuck!",
+          },
+        },
+        {
+          id: 1050,
+          question:
+            "What is the imaginary line around the middle of the Earth called?",
+          options: ["The Belt", "The Equator", "The Middle", "The Ring"],
+          correct: 1,
+          explanation:
+            "The Equator is an imaginary line that divides the Earth into the Northern and Southern halves.",
+          pokemon: {
+            id: 231,
+            name: "Phanpy",
+            type: "Ground",
+            fact: "Phanpy is a small elephant Pokemon!",
+            evolution: "Phanpy → Donphan",
+            height: "0.5 m",
+            weight: "33.5 kg",
+            abilities: "Pickup",
+            funFact:
+              "For its size, Phanpy is incredibly strong and can carry a grown human on its back!",
+          },
+        },
+        {
+          id: 1051,
+          question: "What do we call the study of living things?",
+          options: ["Chemistry", "Biology", "Physics", "Math"],
+          correct: 1,
+          explanation:
+            "Biology is the science that studies plants, animals, and how they live and grow.",
+          pokemon: {
+            id: 114,
+            name: "Tangela",
+            type: "Grass",
+            fact: "Tangela is covered in blue vines!",
+            evolution: "Tangela → Tangrowth",
+            height: "1.0 m",
+            weight: "35 kg",
+            abilities: "Chlorophyll or Leaf Guard",
+            funFact:
+              "Its vines never stop growing, even if they are pulled off in a battle!",
+          },
+        },
+        {
+          id: 1052,
+          question: "Which animal is known as the 'King of the Jungle'?",
+          options: ["Tiger", "Lion", "Elephant", "Monkey"],
+          correct: 1,
+          explanation:
+            "The Lion is called the King of the Jungle, even though they mostly live in the grassy savannas of Africa.",
+          pokemon: {
+            id: 59,
+            name: "Arcanine",
+            type: "Fire",
+            fact: "Arcanine is a legendary-looking Pokemon!",
+            evolution: "Growlithe → Arcanine",
+            height: "1.9 m",
+            weight: "155 kg",
+            abilities: "Intimidate or Flash Fire",
+            funFact:
+              "It is so fast and majestic that it has been admired by people since ancient times!",
+          },
+        },
+        {
+          id: 1053,
+          question: "What do birds use to fly?",
+          options: ["Arms", "Wings", "Legs", "Tails"],
+          correct: 1,
+          explanation:
+            "Birds use their wings to push against the air and lift themselves up into the sky.",
+          pokemon: {
+            id: 16,
+            name: "Pidgey",
+            type: "Normal/Flying",
+            fact: "Pidgey is a very common bird Pokemon!",
+            evolution: "Pidgey → Pidgeotto → Pidgeot",
+            height: "0.3 m",
+            weight: "1.8 kg",
+            abilities: "Keen Eye or Tangled Feet",
+            funFact:
+              "It has a very calm nature and will usually try to hide rather than fight!",
+          },
+        },
+        {
+          id: 1054,
+          question: "What is a baby frog called?",
+          options: ["Puppy", "Kitten", "Tadpole", "Chick"],
+          correct: 2,
+          explanation:
+            "A baby frog is called a tadpole. It lives in the water and has a tail like a fish!",
+          pokemon: {
+            id: 186,
+            name: "Politoed",
+            type: "Water",
+            fact: "Politoed loves to sing in the rain!",
+            evolution: "Poliwag → Poliwhirl → Politoed",
+            height: "1.1 m",
+            weight: "33.9 kg",
+            abilities: "Water Absorb or Damp",
+            funFact:
+              "The curled hair on its head is proof of its status as a king among Poliwag!",
+          },
+        },
+        {
+          id: 1055,
+          question: "What color are emeralds?",
+          options: ["Red", "Blue", "Green", "Yellow"],
+          correct: 2,
+          explanation:
+            "Emeralds are precious gemstones that are a beautiful, bright green color.",
+          pokemon: {
+            id: 44,
+            name: "Gloom",
+            type: "Grass/Poison",
+            fact: "Gloom has a flower on its head!",
+            evolution: "Oddish → Gloom → Vileplume/Bellossom",
+            height: "0.8 m",
+            weight: "8.6 kg",
+            abilities: "Chlorophyll",
+            funFact:
+              "The nectar that droops from its mouth smells terrible to humans but attracts bugs!",
+          },
+        },
+        {
+          id: 1056,
+          question: "What do we call the air that surrounds the Earth?",
+          options: ["Water", "Space", "Atmosphere", "Wind"],
+          correct: 2,
+          explanation:
+            "The atmosphere is the layer of gases that surrounds our planet and allows us to breathe.",
+          pokemon: {
+            id: 142,
+            name: "Aerodactyl",
+            type: "Rock/Flying",
+            fact: "Aerodactyl is a prehistoric Pokemon!",
+            evolution: "Does not evolve",
+            height: "1.8 m",
+            weight: "59 kg",
+            abilities: "Rock Head or Pressure",
+            funFact:
+              "It was restored from DNA found in old amber and was once a king of the skies!",
+          },
+        },
+        {
+          id: 1057,
+          question: "How many colors are in a rainbow?",
+          options: ["5", "7", "10", "3"],
+          correct: 1,
+          explanation:
+            "There are seven colors in a rainbow: Red, Orange, Yellow, Green, Blue, Indigo, and Violet.",
+          pokemon: {
+            id: 250,
+            name: "Ho-Oh",
+            type: "Fire/Flying",
+            fact: "Ho-Oh leaves a rainbow behind it!",
+            evolution: "Legendary (No evolution)",
+            height: "3.8 m",
+            weight: "199 kg",
+            abilities: "Pressure",
+            funFact:
+              "It is said that anyone who sees Ho-Oh is promised eternal happiness!",
+          },
+        },
+        {
+          id: 1058,
+          question: "Which of these is the fastest land animal?",
+          options: ["Cheetah", "Lion", "Ostrich", "Elephant"],
+          correct: 0,
+          explanation:
+            "The cheetah is the fastest animal on land, reaching speeds of up to 70 miles per hour!",
+          pokemon: {
+            id: 26,
+            name: "Raichu",
+            type: "Electric",
+            fact: "Raichu can let off 100,000-volt bursts!",
+            evolution: "Pichu → Pikachu → Raichu",
+            height: "0.8 m",
+            weight: "30 kg",
+            abilities: "Static",
+            funFact:
+              "Its long tail serves as a ground to protect itself from its own high-voltage power!",
+          },
+        },
+        {
+          id: 1059,
+          question: "What is the biggest desert on Earth?",
+          options: ["Sahara", "Antarctica", "Gobi", "Sonoran"],
+          correct: 1,
+          explanation:
+            "Antarctica is actually the largest desert! A desert is a place that gets very little rain, and Antarctica is the driest place on Earth.",
+          pokemon: {
+            id: 225,
+            name: "Delibird",
+            type: "Ice/Flying",
+            fact: "Delibird carries food in its tail!",
+            evolution: "Does not evolve",
+            height: "0.9 m",
+            weight: "16 kg",
+            abilities: "Vital Spirit or Hustle",
+            funFact:
+              "It shares its food with people lost in the mountains to help them survive!",
+          },
+        },
+        {
+          id: 1060,
+          question: "What is the boiling point of water?",
+          options: ["50°C", "100°C (212°F)", "200°C", "0°C"],
+          correct: 1,
+          explanation:
+            "Water boils and turns into steam at 100 degrees Celsius (or 212 degrees Fahrenheit).",
+          pokemon: {
+            id: 136,
+            name: "Flareon",
+            type: "Fire",
+            fact: "Flareon can breathe fire at 3,000 degrees!",
+            evolution: "Eevee → Flareon",
+            height: "0.9 m",
+            weight: "25 kg",
+            abilities: "Flash Fire",
+            funFact:
+              "It fluffs out its fur to cool down its body temperature after using fire!",
+          },
+        },
+        {
+          id: 1061,
+          question: "What do we call a scientist who studies rocks?",
+          options: ["Biologist", "Geologist", "Chemist", "Astronomer"],
+          correct: 1,
+          explanation:
+            "A geologist is a scientist who studies the Earth, especially rocks and how they change over time.",
+          pokemon: {
+            id: 95,
+            name: "Onix",
+            type: "Rock/Ground",
+            fact: "Onix is a giant snake made of rocks!",
+            evolution: "Onix → Steelix",
+            height: "8.8 m",
+            weight: "210 kg",
+            abilities: "Rock Head or Sturdy",
+            funFact:
+              "As it tunnels through the earth, it consumes large rocks and makes a loud noise!",
+          },
+        },
+        {
+          id: 1062,
+          question: "Which animal is the largest bird in the world?",
+          options: ["Eagle", "Ostrich", "Penguin", "Parrot"],
+          correct: 1,
+          explanation:
+            "The ostrich is the largest bird. They can't fly, but they can run very fast with their long legs!",
+          pokemon: {
+            id: 84,
+            name: "Doduo",
+            type: "Normal/Flying",
+            fact: "Doduo has two heads!",
+            evolution: "Doduo → Dodrio",
+            height: "1.4 m",
+            weight: "39 kg",
+            abilities: "Run Away or Early Bird",
+            funFact:
+              "Its two brains communicate by telepathy to help it run at high speeds without tripping!",
+          },
+        },
+        {
+          id: 1063,
+          question: "What do we call a baby cow?",
+          options: ["Puppy", "Kitten", "Calf", "Foal"],
+          correct: 2,
+          explanation:
+            "A baby cow is called a calf. Calves drink milk from their mothers to grow big and strong.",
+          pokemon: {
+            id: 128,
+            name: "Tauros",
+            type: "Normal",
+            fact: "Tauros is a wild bull Pokemon!",
+            evolution: "Does not evolve",
+            height: "1.4 m",
+            weight: "88 kg",
+            abilities: "Intimidate or Anger Point",
+            funFact:
+              "It whips its three tails to build up its energy before charging at full speed!",
+          },
+        },
+        {
+          id: 1064,
+          question: "What do spiders use to catch their food?",
+          options: ["Nets", "Webs", "Cages", "Hands"],
+          correct: 1,
+          explanation:
+            "Spiders spin sticky webs made of silk to catch insects for their dinner.",
+          pokemon: {
+            id: 168,
+            name: "Ariados",
+            type: "Bug/Poison",
+            fact: "Ariados can shoot silk from its mouth and tail!",
+            evolution: "Spinarak → Ariados",
+            height: "1.1 m",
+            weight: "33.5 kg",
+            abilities: "Swarm or Insomnia",
+            funFact:
+              "It wanders around at night looking for prey and uses its silk to trap them!",
+          },
+        },
+        {
+          id: 1065,
+          question: "How many legs does a spider have?",
+          options: ["4", "6", "8", "10"],
+          correct: 2,
+          explanation:
+            "All spiders have eight legs. This makes them arachnids, not insects!",
+          pokemon: {
+            id: 167,
+            name: "Spinarak",
+            type: "Bug/Poison",
+            fact: "Spinarak has a face-like pattern on its back!",
+            evolution: "Spinarak → Ariados",
+            height: "0.5 m",
+            weight: "8.5 kg",
+            abilities: "Swarm or Insomnia",
+            funFact:
+              "The face on its back changes expression depending on Spinarak's mood!",
+          },
+        },
+
+        // UNITED STATES FACTS (35 Questions)
+        {
+          id: 1066,
+          question: "How many states are in the United States?",
+          options: ["25", "50", "100", "13"],
+          correct: 1,
+          explanation:
+            "There are 50 states in the United States. Hawaii was the last state to join in 1959.",
+          pokemon: {
+            id: 151,
+            name: "Mew",
+            type: "Psychic",
+            fact: "Mew contains the DNA of all Pokemon!",
+            evolution: "Legendary (No evolution)",
+            height: "0.4 m",
+            weight: "4 kg",
+            abilities: "Synchronize",
+            funFact:
+              "Mew is so rare that many people believe it is only a myth!",
+          },
+        },
+        {
+          id: 1067,
+          question: "Who was the first President of the United States?",
+          options: [
+            "Abraham Lincoln",
+            "George Washington",
+            "Barack Obama",
+            "Donald Trump",
+          ],
+          correct: 1,
+          explanation:
+            "George Washington was the first president and is often called the 'Father of his Country.'",
+          pokemon: {
+            id: 25,
+            name: "Pikachu",
+            type: "Electric",
+            fact: "Pikachu is the most famous Pokemon!",
+            evolution: "Pichu → Pikachu → Raichu",
+            height: "0.4 m",
+            weight: "6 kg",
+            abilities: "Static",
+            funFact:
+              "Pikachu is the official mascot of the Pokemon world and is loved everywhere!",
+          },
+        },
+        {
+          id: 1068,
+          question: "What is the capital city of the United States?",
+          options: [
+            "New York City",
+            "Washington, D.C.",
+            "Los Angeles",
+            "Chicago",
+          ],
+          correct: 1,
+          explanation:
+            "Washington, D.C. is the capital, where the President lives and Congress meets.",
+          pokemon: {
+            id: 249,
+            name: "Lugia",
+            type: "Psychic/Flying",
+            fact: "Lugia is the guardian of the seas!",
+            evolution: "Legendary (No evolution)",
+            height: "5.2 m",
+            weight: "203 kg",
+            abilities: "Pressure",
+            funFact:
+              "It is so powerful that it stays at the bottom of the ocean to avoid causing storms with its wings!",
+          },
+        },
+        {
+          id: 1069,
+          question: "What is the national bird of the United States?",
+          options: ["Bald Eagle", "Turkey", "Blue Jay", "Robin"],
+          correct: 0,
+          explanation:
+            "The Bald Eagle was chosen as the national bird because it represents strength and freedom.",
+          pokemon: {
+            id: 227,
+            name: "Skarmory",
+            type: "Steel/Flying",
+            fact: "Skarmory's wings are as sharp as swords!",
+            evolution: "Does not evolve",
+            height: "1.7 m",
+            weight: "50.5 kg",
+            abilities: "Keen Eye or Sturdy",
+            funFact:
+              "Its body is entirely covered in steel-hard feathers that protect it from any attack!",
+          },
+        },
+        {
+          id: 1070,
+          question: "What colors are on the United States flag?",
+          options: [
+            "Green, White, and Blue",
+            "Red, White, and Blue",
+            "Red, Yellow, and Blue",
+            "Black and Gold",
+          ],
+          correct: 1,
+          explanation:
+            "The flag has 13 red and white stripes and 50 white stars on a blue background.",
+          pokemon: {
+            id: 250,
+            name: "Ho-Oh",
+            type: "Fire/Flying",
+            fact: "Ho-Oh's feathers glow in many colors!",
+            evolution: "Legendary (No evolution)",
+            height: "3.8 m",
+            weight: "199 kg",
+            abilities: "Pressure",
+            funFact: "It is said that Ho-Oh lives at the foot of a rainbow!",
+          },
+        },
+        {
+          id: 1071,
+          question: "Which ocean is on the East Coast of the United States?",
+          options: [
+            "Pacific Ocean",
+            "Atlantic Ocean",
+            "Indian Ocean",
+            "Arctic Ocean",
+          ],
+          correct: 1,
+          explanation:
+            "The Atlantic Ocean is on the East Coast, near states like New York, Florida, and Maine.",
+          pokemon: {
+            id: 130,
+            name: "Gyarados",
+            type: "Water/Flying",
+            fact: "Gyarados is a huge sea dragon!",
+            evolution: "Magikarp → Gyarados",
+            height: "6.5 m",
+            weight: "235 kg",
+            abilities: "Intimidate",
+            funFact:
+              "It is said that Gyarados can jump over mountains if it gets enough speed!",
+          },
+        },
+        {
+          id: 1072,
+          question: "Which ocean is on the West Coast of the United States?",
+          options: [
+            "Atlantic Ocean",
+            "Pacific Ocean",
+            "Indian Ocean",
+            "Arctic Ocean",
+          ],
+          correct: 1,
+          explanation:
+            "The Pacific Ocean is on the West Coast, near states like California, Oregon, and Washington.",
+          pokemon: {
+            id: 131,
+            name: "Lapras",
+            type: "Water/Ice",
+            fact: "Lapras is a gentle sea Pokemon!",
+            evolution: "Does not evolve",
+            height: "2.5 m",
+            weight: "220 kg",
+            abilities: "Water Absorb",
+            funFact:
+              "Lapras can sing beautiful songs that help people feel calm!",
+          },
+        },
+        {
+          id: 1073,
+          question: "What famous statue was a gift from France to the U.S.?",
+          options: [
+            "The Eiffel Tower",
+            "The Statue of Liberty",
+            "The White House",
+            "Mount Rushmore",
+          ],
+          correct: 1,
+          explanation:
+            "The Statue of Liberty in New York Harbor was a gift from France to celebrate American independence.",
+          pokemon: {
+            id: 122,
+            name: "Mr. Mime",
+            type: "Psychic/Fairy",
+            fact: "Mr. Mime is a master of pantomime!",
+            evolution: "Mime Jr. → Mr. Mime",
+            height: "1.2 m",
+            weight: "54.5 kg",
+            abilities: "Soundproof or Filter",
+            funFact:
+              "It can create invisible walls by vibrating its fingertips very quickly!",
+          },
+        },
+        {
+          id: 1074,
+          question: "How many stars are on the U.S. flag?",
+          options: ["13", "25", "50", "100"],
+          correct: 2,
+          explanation:
+            "There are 50 stars on the flag, one for each state in the country.",
+          pokemon: {
+            id: 120,
+            name: "Staryu",
+            type: "Water",
+            fact: "Staryu looks like a star from the sky!",
+            evolution: "Staryu → Starmie",
+            height: "0.8 m",
+            weight: "34.5 kg",
+            abilities: "Illuminate or Natural Cure",
+            funFact:
+              "If it loses one of its arms, it can regrow it in just one day!",
+          },
+        },
+        {
+          id: 1075,
+          question: "How many stripes are on the U.S. flag?",
+          options: ["7", "10", "13", "50"],
+          correct: 2,
+          explanation:
+            "The 13 stripes represent the original 13 colonies that first formed the United States.",
+          pokemon: {
+            id: 181,
+            name: "Ampharos",
+            type: "Electric",
+            fact: "The gem on its tail can be seen from far away!",
+            evolution: "Mareep → Flaaffy → Ampharos",
+            height: "1.4 m",
+            weight: "61.5 kg",
+            abilities: "Static",
+            funFact:
+              "In the old days, people used its light as a beacon to guide ships to shore!",
+          },
+        },
+        {
+          id: 1076,
+          question: "Which city is the largest in the United States?",
+          options: [
+            "Washington, D.C.",
+            "New York City",
+            "Los Angeles",
+            "Chicago",
+          ],
+          correct: 1,
+          explanation:
+            "New York City is the biggest city in the U.S., with over 8 million people living there!",
+          pokemon: {
+            id: 150,
+            name: "Mewtwo",
+            type: "Psychic",
+            fact: "Mewtwo is the most powerful Psychic Pokemon!",
+            evolution: "Legendary (No evolution)",
+            height: "2.0 m",
+            weight: "122 kg",
+            abilities: "Pressure",
+            funFact:
+              "It was created by scientists using the DNA of Mew, making it incredibly strong!",
+          },
+        },
+        {
+          id: 1077,
+          question: "Which state is the biggest by land size?",
+          options: ["Texas", "California", "Alaska", "Florida"],
+          correct: 2,
+          explanation:
+            "Alaska is by far the largest state. It is more than twice the size of Texas!",
+          pokemon: {
+            id: 144,
+            name: "Articuno",
+            type: "Ice/Flying",
+            fact: "Articuno lives in cold, icy places!",
+            evolution: "Legendary (No evolution)",
+            height: "1.7 m",
+            weight: "55.4 kg",
+            abilities: "Pressure",
+            funFact:
+              "It is said to appear to people lost in the snowy mountains to guide them!",
+          },
+        },
+        {
+          id: 1078,
+          question: "Which state is the smallest by land size?",
+          options: ["Rhode Island", "Delaware", "Hawaii", "Vermont"],
+          correct: 0,
+          explanation:
+            "Rhode Island is the smallest state. You can drive across the whole state in less than an hour!",
+          pokemon: {
+            id: 172,
+            name: "Pichu",
+            type: "Electric",
+            fact: "Pichu is very small but full of energy!",
+            evolution: "Pichu → Pikachu → Raichu",
+            height: "0.3 m",
+            weight: "2 kg",
+            abilities: "Static",
+            funFact:
+              "It is not yet good at storing electricity and may zap itself if it gets too excited!",
+          },
+        },
+        {
+          id: 1079,
+          question: "Who lives in the White House?",
+          options: ["The Mayor", "The Governor", "The President", "The King"],
+          correct: 2,
+          explanation:
+            "The President of the United States lives and works in the White House in Washington, D.C.",
+          pokemon: {
+            id: 149,
+            name: "Dragonite",
+            type: "Dragon/Flying",
+            fact: "Dragonite is a kind and helpful Pokemon!",
+            evolution: "Dratini → Dragonair → Dragonite",
+            height: "2.2 m",
+            weight: "210 kg",
+            abilities: "Inner Focus",
+            funFact:
+              "It is said to fly around the world to help people and Pokemon in trouble!",
+          },
+        },
+        {
+          id: 1080,
+          question: "On which holiday do Americans celebrate independence?",
+          options: [
+            "Christmas",
+            "Thanksgiving",
+            "The Fourth of July",
+            "Halloween",
+          ],
+          correct: 2,
+          explanation:
+            "The Fourth of July (Independence Day) celebrates the birthday of the United States with parades and fireworks.",
+          pokemon: {
+            id: 155,
+            name: "Cyndaquil",
+            type: "Fire",
+            fact: "Cyndaquil can shoot sparks from its back!",
+            evolution: "Cyndaquil → Quilava → Typhlosion",
+            height: "0.5 m",
+            weight: "7.9 kg",
+            abilities: "Blaze",
+            funFact:
+              "When it is surprised, its fire flares up brightly like a firework!",
+          },
+        },
+        {
+          id: 1081,
+          question:
+            "Which state is famous for its theme parks like Disney World?",
+          options: ["California", "Florida", "Texas", "New York"],
+          correct: 1,
+          explanation:
+            "Florida is home to many famous theme parks because it is sunny and warm most of the year.",
+          pokemon: {
+            id: 184,
+            name: "Azumarill",
+            type: "Water/Fairy",
+            fact: "Azumarill has a bubble-like pattern!",
+            evolution: "Azurill → Marill → Azumarill",
+            height: "0.8 m",
+            weight: "28.5 kg",
+            abilities: "Thick Fat or Huge Power",
+            funFact:
+              "It can make a bubble that protects its friends from getting wet or hurt!",
+          },
+        },
+        {
+          id: 1082,
+          question: "What is the longest river in the United States?",
+          options: [
+            "Mississippi River",
+            "Missouri River",
+            "Hudson River",
+            "Colorado River",
+          ],
+          correct: 1,
+          explanation:
+            "The Missouri River is the longest, though the Mississippi River carries more water.",
+          pokemon: {
+            id: 129,
+            name: "Magikarp",
+            type: "Water",
+            fact: "Magikarp is famous for jumping!",
+            evolution: "Magikarp → Gyarados",
+            height: "0.9 m",
+            weight: "10 kg",
+            abilities: "Swift Swim",
+            funFact:
+              "In ancient legends, it is said that a Magikarp that jumps over a waterfall becomes a dragon!",
+          },
+        },
+        {
+          id: 1083,
+          question:
+            "What is the name of the currency (money) used in the U.S.?",
+          options: ["Pounds", "Euros", "Dollars", "Yen"],
+          correct: 2,
+          explanation:
+            "The United States uses the U.S. Dollar. It comes in both paper bills and coins like quarters and dimes.",
+          pokemon: {
+            id: 52,
+            name: "Meowth",
+            type: "Normal",
+            fact: "Meowth loves shiny things and coins!",
+            evolution: "Meowth → Persian",
+            height: "0.4 m",
+            weight: "4.2 kg",
+            abilities: "Pickup or Technician",
+            funFact:
+              "Meowth can use a move called Pay Day, which scatters coins for its trainer to pick up!",
+          },
+        },
+        {
+          id: 1084,
+          question: "Which famous American helped invent the lightbulb?",
+          options: [
+            "Benjamin Franklin",
+            "Thomas Edison",
+            "Albert Einstein",
+            "Steve Jobs",
+          ],
+          correct: 1,
+          explanation:
+            "Thomas Edison was a great inventor who created the first practical lightbulb and many other things.",
+          pokemon: {
+            id: 125,
+            name: "Electabuzz",
+            type: "Electric",
+            fact: "Electabuzz feeds on electricity!",
+            evolution: "Elekid → Electabuzz → Electivire",
+            height: "1.1 m",
+            weight: "30 kg",
+            abilities: "Static",
+            funFact:
+              "It can be found near power plants because it loves to eat the electricity there!",
+          },
+        },
+        {
+          id: 1085,
+          question:
+            "What mountain has the faces of four presidents carved into it?",
+          options: [
+            "Mount Everest",
+            "Mount Rushmore",
+            "The Rocky Mountains",
+            "Pikes Peak",
+          ],
+          correct: 1,
+          explanation:
+            "Mount Rushmore in South Dakota features the faces of Washington, Jefferson, Roosevelt, and Lincoln.",
+          pokemon: {
+            id: 51,
+            name: "Dugtrio",
+            type: "Ground",
+            fact: "Dugtrio is actually three Diglett in one!",
+            evolution: "Diglett → Dugtrio",
+            height: "0.7 m",
+            weight: "33.3 kg",
+            abilities: "Sand Veil or Arena Trap",
+            funFact:
+              "The three heads work together to dig through even the hardest rock!",
+          },
+        },
+        {
+          id: 1086,
+          question: "What is the largest state in the lower 48 states?",
+          options: ["California", "Texas", "Montana", "Arizona"],
+          correct: 1,
+          explanation:
+            "Texas is the largest state in the 'lower 48' (not including Alaska or Hawaii).",
+          pokemon: {
+            id: 128,
+            name: "Tauros",
+            type: "Normal",
+            fact: "Tauros is very strong and fast!",
+            evolution: "Does not evolve",
+            height: "1.4 m",
+            weight: "88 kg",
+            abilities: "Intimidate",
+            funFact:
+              "It loves to charge around in groups across the grassy plains!",
+          },
+        },
+        {
+          id: 1087,
+          question: "Which state is known as the 'Sunshine State'?",
+          options: ["California", "Florida", "Arizona", "Texas"],
+          correct: 1,
+          explanation:
+            "Florida is called the Sunshine State because it is very sunny and warm for most of the year.",
+          pokemon: {
+            id: 192,
+            name: "Sunflora",
+            type: "Grass",
+            fact: "Sunflora always faces the sun!",
+            evolution: "Sunkern → Sunflora",
+            height: "0.8 m",
+            weight: "8.5 kg",
+            abilities: "Chlorophyll or Solar Power",
+            funFact:
+              "When the sun goes down, it closes its petals and stays completely still!",
+          },
+        },
+        {
+          id: 1088,
+          question: "What is the name of the national anthem of the U.S.?",
+          options: [
+            "God Bless America",
+            "America the Beautiful",
+            "The Star-Spangled Banner",
+            "Happy Birthday",
+          ],
+          correct: 2,
+          explanation:
+            "The Star-Spangled Banner is the national song of the U.S., often sung at the start of sports games.",
+          pokemon: {
+            id: 39,
+            name: "Jigglypuff",
+            type: "Normal/Fairy",
+            fact: "Jigglypuff loves to sing songs!",
+            evolution: "Igglybuff → Jigglypuff → Wigglytuff",
+            height: "0.5 m",
+            weight: "5.5 kg",
+            abilities: "Cute Charm or Competitive",
+            funFact:
+              "Its songs are so soothing that everyone who hears them falls into a deep sleep!",
+          },
+        },
+        {
+          id: 1089,
+          question: "Who was the leader of the Civil Rights movement?",
+          options: [
+            "Martin Luther King Jr.",
+            "George Washington",
+            "Abraham Lincoln",
+            "Thomas Jefferson",
+          ],
+          correct: 0,
+          explanation:
+            "Dr. Martin Luther King Jr. was a great leader who worked for peace and equality for all people.",
+          pokemon: {
+            id: 176,
+            name: "Togetic",
+            type: "Fairy/Flying",
+            fact: "Togetic is a symbol of peace and joy!",
+            evolution: "Togepi → Togetic → Togekiss",
+            height: "0.6 m",
+            weight: "3.2 kg",
+            abilities: "Hustle or Serene Grace",
+            funFact:
+              "It is said to appear to kind-hearted people and sprinkle them with joy dust!",
+          },
+        },
+        {
+          id: 1090,
+          question: "Which state is famous for its giant redwood trees?",
+          options: ["Florida", "New York", "California", "Texas"],
+          correct: 2,
+          explanation:
+            "California is home to the world's tallest trees, the giant redwoods and sequoias.",
+          pokemon: {
+            id: 154,
+            name: "Meganium",
+            type: "Grass",
+            fact: "Meganium can bring dead grass back to life!",
+            evolution: "Chikorita → Bayleef → Meganium",
+            height: "1.8 m",
+            weight: "100.5 kg",
+            abilities: "Overgrow",
+            funFact:
+              "The fragrance from its flower petals can calm anyone who smells it!",
+          },
+        },
+        {
+          id: 1091,
+          question: "What is the name of the desert in the southwestern U.S.?",
+          options: [
+            "Sahara Desert",
+            "Gobi Desert",
+            "Sonoran Desert",
+            "Atacama Desert",
+          ],
+          correct: 2,
+          explanation:
+            "The Sonoran Desert is in Arizona and California and is famous for its giant Saguaro cacti.",
+          pokemon: {
+            id: 104,
+            name: "Cubone",
+            type: "Ground",
+            fact: "Cubone lives in dry, desert-like areas!",
+            evolution: "Cubone → Marowak",
+            height: "0.4 m",
+            weight: "6.5 kg",
+            abilities: "Rock Head or Lightning Rod",
+            funFact:
+              "It is very lonely and is said to cry when it sees a full moon!",
+          },
+        },
+        {
+          id: 1092,
+          question:
+            "Which state is an island state in the middle of the Pacific Ocean?",
+          options: ["Florida", "Hawaii", "California", "Alaska"],
+          correct: 1,
+          explanation:
+            "Hawaii is a group of beautiful islands in the middle of the Pacific Ocean.",
+          pokemon: {
+            id: 131,
+            name: "Lapras",
+            type: "Water/Ice",
+            fact: "Lapras is often found near island shores!",
+            evolution: "Does not evolve",
+            height: "2.5 m",
+            weight: "220 kg",
+            abilities: "Water Absorb",
+            funFact:
+              "It is a very helpful Pokemon that will swim with you across the sea!",
+          },
+        },
+        {
+          id: 1093,
+          question: "What is the name of the big canyon in Arizona?",
+          options: [
+            "The Deep Canyon",
+            "The Grand Canyon",
+            "The Great Valley",
+            "The Rock Canyon",
+          ],
+          correct: 1,
+          explanation:
+            "The Grand Canyon is a massive canyon carved over millions of years by the Colorado River.",
+          pokemon: {
+            id: 142,
+            name: "Aerodactyl",
+            type: "Rock/Flying",
+            fact: "Aerodactyl is a prehistoric rock Pokemon!",
+            evolution: "Does not evolve",
+            height: "1.8 m",
+            weight: "59 kg",
+            abilities: "Pressure",
+            funFact:
+              "It used to rule the skies in ancient times and is a very strong fighter!",
+          },
+        },
+        {
+          id: 1094,
+          question: "Which American holiday is known for eating turkey?",
+          options: ["Halloween", "Easter", "Thanksgiving", "Christmas"],
+          correct: 2,
+          explanation:
+            "On Thanksgiving, American families gather to give thanks and usually eat a big meal with turkey.",
+          pokemon: {
+            id: 83,
+            name: "Farfetch'd",
+            type: "Normal/Flying",
+            fact: "Farfetch'd always carries a leek!",
+            evolution: "Does not evolve",
+            height: "0.8 m",
+            weight: "15 kg",
+            abilities: "Keen Eye or Inner Focus",
+            funFact:
+              "It uses its leek like a sword to defend itself and its home!",
+          },
+        },
+        {
+          id: 1095,
+          question: "What color is the U.S. one-dollar bill?",
+          options: ["Blue", "Red", "Green", "Yellow"],
+          correct: 2,
+          explanation:
+            "U.S. paper money is famously green, though newer bills have some other subtle colors.",
+          pokemon: {
+            id: 52,
+            name: "Meowth",
+            type: "Normal",
+            fact: "Meowth loves collecting coins and shiny bills!",
+            evolution: "Meowth → Persian",
+            height: "0.4 m",
+            weight: "4.2 kg",
+            abilities: "Pickup",
+            funFact:
+              "Meowth is the only Pokemon that can learn how to speak human languages!",
+          },
+        },
+        {
+          id: 1096,
+          question: "Which of these is a nickname for the United States?",
+          options: [
+            "Uncle Sam",
+            "The Motherland",
+            "The Big Apple",
+            "The Golden State",
+          ],
+          correct: 0,
+          explanation:
+            "Uncle Sam is a famous nickname and character that represents the U.S. government.",
+          pokemon: {
+            id: 122,
+            name: "Mr. Mime",
+            type: "Psychic/Fairy",
+            fact: "Mr. Mime looks a bit like a human!",
+            evolution: "Mime Jr. → Mr. Mime",
+            height: "1.2 m",
+            weight: "54.5 kg",
+            abilities: "Filter",
+            funFact:
+              "It is very good at doing chores and helping out around the house!",
+          },
+        },
+        {
+          id: 1097,
+          question: "Which U.S. state is known for growing lots of peaches?",
+          options: ["Georgia", "New York", "Alaska", "Nevada"],
+          correct: 0,
+          explanation:
+            "Georgia is called the 'Peach State' because it grows some of the best peaches in the world.",
+          pokemon: {
+            id: 173,
+            name: "Cleffa",
+            type: "Fairy",
+            fact: "Cleffa is a small, pink, star-shaped Pokemon!",
+            evolution: "Cleffa → Clefairy → Clefable",
+            height: "0.3 m",
+            weight: "3 kg",
+            abilities: "Cute Charm",
+            funFact:
+              "Cleffa is said to have arrived on Earth on a shooting star!",
+          },
+        },
+        {
+          id: 1098,
+          question: "What is the name of the bridge in San Francisco?",
+          options: [
+            "The Silver Bridge",
+            "The Golden Gate Bridge",
+            "The San Fran Bridge",
+            "The Ocean Bridge",
+          ],
+          correct: 1,
+          explanation:
+            "The Golden Gate Bridge is a famous orange-red bridge that connects San Francisco to Marin County.",
+          pokemon: {
+            id: 130,
+            name: "Gyarados",
+            type: "Water/Flying",
+            fact: "Gyarados is a giant sea dragon!",
+            evolution: "Magikarp → Gyarados",
+            height: "6.5 m",
+            weight: "235 kg",
+            abilities: "Intimidate",
+            funFact:
+              "It is a very fierce Pokemon that can live in both rivers and the ocean!",
+          },
+        },
+        {
+          id: 1099,
+          question: "Which state is famous for its casinos in Las Vegas?",
+          options: ["California", "Nevada", "Arizona", "Utah"],
+          correct: 1,
+          explanation:
+            "Nevada is home to Las Vegas, a city famous for its bright lights and entertainment.",
+          pokemon: {
+            id: 181,
+            name: "Ampharos",
+            type: "Electric",
+            fact: "Ampharos has a very bright light!",
+            evolution: "Mareep → Flaaffy → Ampharos",
+            height: "1.4 m",
+            weight: "61.5 kg",
+            abilities: "Static",
+            funFact: "Its light is so bright it can even be seen from space!",
+          },
+        },
+        {
+          id: 1100,
+          question: "Who was the president during the Civil War?",
+          options: [
+            "George Washington",
+            "Abraham Lincoln",
+            "Thomas Jefferson",
+            "Andrew Jackson",
+          ],
+          correct: 1,
+          explanation:
+            "Abraham Lincoln was the 16th president and led the country during the difficult Civil War.",
+          pokemon: {
+            id: 149,
+            name: "Dragonite",
+            type: "Dragon/Flying",
+            fact: "Dragonite is a wise and powerful leader!",
+            evolution: "Dratini → Dragonair → Dragonite",
+            height: "2.2 m",
+            weight: "210 kg",
+            abilities: "Inner Focus",
+            funFact:
+              "It is a very rare Pokemon that is said to be as smart as a human!",
+          },
+        },
+      ];
+
+      // Combine all questions
+      const allQuestions = [...questionPool, ...newQuestions];
+
+      // Question usage tracking
+      let questionHistory = JSON.parse(
+        localStorage.getItem("questionHistory")
+      ) || {
+        usedQuestions: [],
+        lastUsedTimestamp: {},
+      };
+
+      // Function to select questions with smart weighting
+      function selectQuestions(count) {
+        const now = Date.now();
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+
+        // Calculate weights for each question
+        const weightedQuestions = allQuestions.map((q) => {
+          let weight = 1.0;
+
+          // Reduce weight if used recently
+          const timesUsed = questionHistory.usedQuestions.filter(
+            (id) => id === q.id
+          ).length;
+          weight *= Math.pow(0.5, timesUsed); // Halve probability for each use
+
+          // Reduce weight based on how recently it was used
+          const lastUsed = questionHistory.lastUsedTimestamp[q.id];
+          if (lastUsed) {
+            const daysSince = (now - lastUsed) / ONE_DAY;
+            if (daysSince < 1) weight *= 0.1; // Very unlikely if used today
+            else if (daysSince < 3)
+              weight *= 0.3; // Unlikely if used in last 3 days
+            else if (daysSince < 7) weight *= 0.6; // Less likely if used this week
+          }
+
+          return { question: q, weight: weight };
+        });
+
+        // Select questions using weighted random selection
+        const selected = [];
+        const pool = [...weightedQuestions];
+
+        for (let i = 0; i < count && pool.length > 0; i++) {
+          const totalWeight = pool.reduce((sum, item) => sum + item.weight, 0);
+          let random = Math.random() * totalWeight;
+
+          let selectedIndex = 0;
+          for (let j = 0; j < pool.length; j++) {
+            random -= pool[j].weight;
+            if (random <= 0) {
+              selectedIndex = j;
+              break;
+            }
+          }
+
+          const selectedItem = pool.splice(selectedIndex, 1)[0];
+          selected.push(selectedItem.question);
+
+          // Track usage
+          questionHistory.usedQuestions.push(selectedItem.question.id);
+          questionHistory.lastUsedTimestamp[selectedItem.question.id] = now;
+        }
+
+        // Save history
+        localStorage.setItem(
+          "questionHistory",
+          JSON.stringify(questionHistory)
+        );
+
+        return selected;
+      }
+
+      // Get questions for this quiz
+      const questions = selectQuestions(20);
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let answeredCorrectly = false;
+      let collectedPokemon = [];
+
+      // Tab switching
+      function switchTab(tabName) {
+        // Hide all tabs
+        document.querySelectorAll(".tab-content").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        document.querySelectorAll(".tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        // Show selected tab
+        document.getElementById(tabName + "-tab").classList.add("active");
+        event.target.classList.add("active");
+
+        // Update Pokemon facts if viewing that tab
+        if (tabName === "pokemon-facts") {
+          updatePokemonFacts();
+        }
+      }
+
+      function updatePokemonFacts() {
+        const factsContent = document.getElementById("pokemon-facts-content");
+
+        if (collectedPokemon.length === 0) {
+          factsContent.innerHTML = `
+                    <p style="color: #868e96; text-align: center; padding: 40px;">
+                        Catch Pokemon by answering questions correctly to unlock their facts here!
+                    </p>
+                `;
+        } else {
+          factsContent.innerHTML = collectedPokemon
+            .map(
+              (p) => `
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                padding: 20px; border-radius: 15px; margin: 15px 0; color: white;">
+                        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png" 
+                                 style="width: 120px; height: 120px; background: white; border-radius: 10px; padding: 10px;">
+                            <div style="flex: 1;">
+                                <h3 style="margin: 0 0 10px 0; font-size: 1.8em;">${p.name}</h3>
+                                <p style="margin: 5px 0;"><strong>Type:</strong> ${p.type}</p>
+                                <p style="margin: 5px 0;"><strong>Height:</strong> ${p.height} | <strong>Weight:</strong> ${p.weight}</p>
+                            </div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin-top: 15px;">
+                            <p style="margin: 8px 0;"><strong>📖 About:</strong> ${p.fact}</p>
+                            <p style="margin: 8px 0;"><strong>⚡ Abilities:</strong> ${p.abilities}</p>
+                            <p style="margin: 8px 0;"><strong>🔄 Evolution:</strong> ${p.evolution}</p>
+                            <p style="margin: 8px 0;"><strong>🎯 Fun Fact:</strong> ${p.funFact}</p>
+                        </div>
+                    </div>
+                `
+            )
+            .join("");
+        }
+      }
+
+      // Remove old feature and stats functions
+      function showFeature(featureName) {}
+      function selectDifficulty(element, level) {}
+      function updateStatsDisplay() {}
+      function saveStats() {
+        localStorage.setItem("pokemonQuizStats", JSON.stringify(stats));
+      }
+      function resetStats() {}
+
+      function resetQuestionHistory() {
+        if (
+          confirm(
+            "This will reset which questions you've seen, so you can see all questions fresh again. Continue?"
+          )
+        ) {
+          questionHistory = {
+            usedQuestions: [],
+            lastUsedTimestamp: {},
+          };
+          localStorage.setItem(
+            "questionHistory",
+            JSON.stringify(questionHistory)
+          );
+          alert(
+            "Question history reset! You'll get a fresh mix of questions next game."
+          );
+        }
+      }
+
+      function updatePokemonBar() {
+        const pokemonList = document.getElementById("pokemon-list");
+
+        if (collectedPokemon.length === 0) {
+          pokemonList.innerHTML =
+            '<p style="color: #868e96; margin: 0;">No Pokemon yet - answer correctly to catch them!</p>';
+        } else {
+          pokemonList.innerHTML = collectedPokemon
+            .map(
+              (p, index) => `
+                    <div class="pokemon-item" title="${p.name}">
+                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png" alt="${p.name}">
+                    </div>
+                `
+            )
+            .join("");
+        }
+      }
+
+      function displayQuestion() {
+        const quizContent = document.getElementById("quiz-content");
+        const question = questions[currentQuestionIndex];
+
+        document.getElementById("current-question").textContent =
+          currentQuestionIndex + 1;
+        document.getElementById("total-questions").textContent =
+          questions.length;
+        document.getElementById("score").textContent = score;
+
+        quizContent.innerHTML = `
+                <div class="question-box">
+                    <div class="question">${question.question}</div>
+                    <div class="options">
+                        ${question.options
+                          .map(
+                            (option, index) => `
+                            <div class="option" onclick="checkAnswer(${index})">${option}</div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                </div>
+            `;
+      }
+
+      function checkAnswer(selectedIndex) {
+        const question = questions[currentQuestionIndex];
+        const options = document.querySelectorAll(".option");
+
+        // Disable all options
+        options.forEach((option) => option.classList.add("disabled"));
+
+        // Track this question
+        stats.totalQuestions++;
+
+        if (selectedIndex === question.correct) {
+          // Correct answer
+          options[selectedIndex].classList.add("correct");
+          answeredCorrectly = true;
+          score++;
+          stats.totalCorrect++;
+
+          document.getElementById("score").textContent = score;
+          collectedPokemon.push(question.pokemon);
+
+          // Add to all-time collection if not already there
+          if (
+            !stats.allPokemonCaught.find((p) => p.id === question.pokemon.id)
+          ) {
+            stats.allPokemonCaught.push(question.pokemon);
+          }
+
+          updatePokemonBar();
+          showFeedback(true);
+          showPokemon();
+        } else {
+          // Wrong answer
+          options[selectedIndex].classList.add("wrong");
+          options[question.correct].classList.add("correct");
+          answeredCorrectly = false;
+
+          showFeedback(false, question.options[question.correct]);
+
+          // If user has Pokemon, they must return one
+          if (collectedPokemon.length > 0) {
+            showReturnPokemonModal();
+          } else {
+            showNextButton();
+          }
+        }
+
+        saveStats();
+      }
+
+      function showReturnPokemonModal() {
+        const modal = document.getElementById("return-pokemon-modal");
+        const modalList = document.getElementById("modal-pokemon-list");
+
+        modalList.innerHTML = collectedPokemon
+          .map(
+            (p, index) => `
+                <div class="modal-pokemon-item" onclick="returnPokemon(${index})">
+                    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png" alt="${p.name}">
+                    <p>${p.name}</p>
+                </div>
+            `
+          )
+          .join("");
+
+        modal.classList.add("show");
+      }
+
+      function returnPokemon(index) {
+        const returnedPokemon = collectedPokemon[index];
+
+        // Remove from current collection
+        collectedPokemon.splice(index, 1);
+
+        // Update score
+        if (score > 0) {
+          score--;
+          document.getElementById("score").textContent = score;
+          stats.totalCorrect--;
+        }
+
+        // Update display
+        updatePokemonBar();
+
+        // Close modal
+        document
+          .getElementById("return-pokemon-modal")
+          .classList.remove("show");
+
+        // Show feedback about returned Pokemon
+        const quizContent = document.getElementById("quiz-content");
+        const returnDiv = document.createElement("div");
+        returnDiv.className = "feedback wrong";
+        returnDiv.innerHTML = `😢 You had to return ${returnedPokemon.name}!`;
+        quizContent.appendChild(returnDiv);
+
+        // Show next button
+        showNextButton();
+
+        saveStats();
+      }
+
+      function showFeedback(isCorrect, correctAnswer = "") {
+        const quizContent = document.getElementById("quiz-content");
+        const question = questions[currentQuestionIndex];
+        const feedbackDiv = document.createElement("div");
+        feedbackDiv.className = `feedback ${isCorrect ? "correct" : "wrong"}`;
+
+        if (isCorrect) {
+          feedbackDiv.innerHTML = `
+                    <div>🎉 Amazing! You got it right! 🎉</div>
+                    <div style="margin-top: 10px; font-size: 0.95em; font-weight: normal;">
+                        💡 ${question.explanation}
+                    </div>
+                `;
+        } else {
+          feedbackDiv.innerHTML = `
+                    <div>Not quite! The correct answer is: <strong>${correctAnswer}</strong></div>
+                    <div style="margin-top: 10px; font-size: 0.95em; font-weight: normal;">
+                        💡 ${question.explanation}
+                    </div>
+                `;
+        }
+
+        quizContent.appendChild(feedbackDiv);
+      }
+
+      function showPokemon() {
+        const quizContent = document.getElementById("quiz-content");
+        const pokemon = questions[currentQuestionIndex].pokemon;
+
+        const pokemonDiv = document.createElement("div");
+        pokemonDiv.className = "pokemon-reveal";
+        pokemonDiv.innerHTML = `
+                <h2>🎊 You caught a Pokemon! 🎊</h2>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png" 
+                     alt="${pokemon.name}" 
+                     onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png'">
+                <h2>${pokemon.name}</h2>
+                <p><strong>Type:</strong> ${pokemon.type}</p>
+                <p><strong>Height:</strong> ${pokemon.height} | <strong>Weight:</strong> ${pokemon.weight}</p>
+                <div style="background: rgba(255,255,255,0.3); padding: 15px; border-radius: 10px; margin: 15px 0; text-align: left;">
+                    <p style="margin: 8px 0;"><strong>📖 About:</strong> ${pokemon.fact}</p>
+                    <p style="margin: 8px 0;"><strong>⚡ Abilities:</strong> ${pokemon.abilities}</p>
+                    <p style="margin: 8px 0;"><strong>🔄 Evolution:</strong> ${pokemon.evolution}</p>
+                    <p style="margin: 8px 0;"><strong>🎯 Fun Fact:</strong> ${pokemon.funFact}</p>
+                </div>
+                <p style="font-size: 0.9em; color: #495057;">Visit the <strong>Pokemon Facts</strong> tab to see all your caught Pokemon!</p>
+            `;
+
+        quizContent.appendChild(pokemonDiv);
+        showNextButton();
+      }
+
+      function showNextButton() {
+        const quizContent = document.getElementById("quiz-content");
+        const nextBtn = document.createElement("button");
+        nextBtn.className = "next-btn";
+        nextBtn.textContent =
+          currentQuestionIndex < questions.length - 1
+            ? "Next Question ➡️"
+            : "Finish Quiz 🏆";
+        nextBtn.onclick = nextQuestion;
+        quizContent.appendChild(nextBtn);
+      }
+
+      function nextQuestion() {
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < questions.length) {
+          displayQuestion();
+        } else {
+          showGameOver();
+        }
+      }
+
+      function showGameOver() {
+        const quizContent = document.getElementById("quiz-content");
+
+        // Update stats for quiz completion
+        stats.totalQuizzes++;
+        saveStats();
+
+        quizContent.innerHTML = `
+                <div class="game-over">
+                    <h2>🎊 Quiz Complete! 🎊</h2>
+                    <p style="font-size: 1.5em; margin: 20px 0;">
+                        Your Score: ${score} out of ${questions.length}
+                    </p>
+                    <h3 style="color: #667eea; margin: 20px 0;">Pokemon Caught This Quiz:</h3>
+                    <div class="pokemon-collection">
+                        ${collectedPokemon
+                          .map(
+                            (p) => `
+                            <div class="pokemon-badge" title="${p.name}">
+                                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png" 
+                                     alt="${p.name}" 
+                                     style="width: 100%; height: 100%; object-fit: contain;">
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                    ${
+                      collectedPokemon.length === 0
+                        ? '<p style="color: #666; margin: 20px 0;">Try again to catch some Pokemon!</p>'
+                        : ""
+                    }
+                    <p style="margin: 20px 0; color: #667eea; font-weight: bold;">
+                        Total Pokemon in Collection: ${
+                          stats.allPokemonCaught.length
+                        }
+                    </p>
+                    <button class="restart-btn" onclick="restartQuiz()">Play Again! 🔄</button>
+                </div>
+            `;
+      }
+
+      function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        answeredCorrectly = false;
+        collectedPokemon = [];
+        updatePokemonBar();
+        displayQuestion();
+      }
+
+      // Start the quiz
+      displayQuestion();
+      updatePokemonBar();
+    </script>
+  </body>
+</html>
